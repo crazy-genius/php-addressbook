@@ -1,10 +1,10 @@
 <?php
 	include ("include/dbconnect.php");
-   
+
   if(isset($_REQUEST['type']) && $_REQUEST['type'] == "vCard-zip") {
-   	
+
      require "include/export.vcard.php";
-     
+
      Header("Content-Type: archive/zip");
      Header('Content-Disposition: attachment; filename="'.date("Y_m_d-Hi").'.zip"');
 
@@ -19,42 +19,42 @@
 	   if(isset($part_sql)) {
 	     $sql .= " AND ".$part_sql;
 	   }
-	   $result = mysql_query($sql);
-     while($address = mysql_fetch_array($result)) {
+	   $result = mysqli_query($db, $sql);
+     while($address = mysqli_fetch_array($result)) {
      	 $vcfname = $address['firstname'].(isset($address['middlename']) ? "_".$address['middlename']:"")."_".$address['lastname']."-".$address['id'].".vcf";
        $vcfname = str_replace(" ","_",$vcfname);  // middlename may contain spaces, for example "van der" in Dutch
      	 setlocale(LC_ALL, 'en_US.UTF8');
      	 $vcfname = str_replace( "?", "", iconv('UTF-8', 'ASCII//TRANSLIT', $vcfname));
        $zip->addFromString($vcfname, address2vcard($address));
      }
-     $zip->close();    
+     $zip->close();
      readfile($filename);
      unlink($filename);
 
   } elseif(isset($_REQUEST['type']) && $_REQUEST['type'] == "vCard-one") {
-  	
+
      Header("Content-Type: text/x-vCard");
      $filename = utf8_to_latin1("All_Contacts_of_domin-".$domain_id."-".date("Y_m_d-Hi"));
      Header('Content-Disposition: attachment; filename="'.$filename.'.vcf"');
      require "include/export.vcard.php";
 
     $sql = "SELECT * FROM $month_from_where";
-     $result = mysql_query($sql);
-     while($links  = mysql_fetch_array($result)) {
+     $result = mysqli_query($db, $sql);
+     while($links  = mysqli_fetch_array($result)) {
         echo address2vcard($links);
      }
-  } elseif(isset($_REQUEST['type']) && $_REQUEST['type'] == "xls-Nokia") {  	
-  	
-     require "include/export.xls-nokia.php";     
-     
+  } elseif(isset($_REQUEST['type']) && $_REQUEST['type'] == "xls-Nokia") {
+
+     require "include/export.xls-nokia.php";
+
   } else {
-  	
+
 	include ("include/format.inc.php");
 ?>
 <title><?php echo ucfmsg("ADDRESS_BOOK").($group_name != "" ? " ($group_name)":""); ?></title>
 <?php include ("include/header.inc.php"); ?>
- <h1><?php echo ucfmsg('EXPORT'); ?></h1> 
- <h2>Addressbook</h2> 
+ <h1><?php echo ucfmsg('EXPORT'); ?></h1>
+ <h2>Addressbook</h2>
 <form>
   <label>vCards for Outlook:</label>
   <input type="hidden" name="type"   value="vCard-zip">
@@ -78,7 +78,7 @@
   <input type="hidden" name="type"   value="xls-Nokia">
   <input type="submit" name="submit" value="Download"><br>
 </form>
- <h2>Calendar</h2> 
+ <h2>Calendar</h2>
 <form method="get" action="birthdays<?php echo $page_ext; ?>">
   <label>Birthdays (iCalendar): </label>
   <input type="hidden" name="ics"    value="">

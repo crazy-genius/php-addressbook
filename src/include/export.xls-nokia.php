@@ -12,35 +12,35 @@
   $use_utf_16LE = function_exists('mb_convert_encoding');
 
   function add($value, $first = false) {
-  	
+
   	global $use_utf_16LE;
-  	
+
   	// Remove whitespaces, Replace newlines and escape ["] character
   	$res = trim($value);
   	$res = str_replace("\r\n", ", ", $res);
   	$res = str_replace('"', '""',  $res);
-  
+
   	// Add to result
-  	if($use_utf_16LE) {  		
+  	if($use_utf_16LE) {
   	  $res = ($first ? "" : "," ) . '"'.$res.'"';
       print mb_convert_encoding( $res, 'UTF-16LE', 'UTF-8');
-      
+
     } else { // Fallback to ISO-8859-1
       $res = ($first ? "" : ";" ) . '"'.$res.'"';
       print utf8_decode($res);
     }
-  
+
   }
-	
+
 	$sql = "SELECT $table.*, $month_lookup.bmonth_num FROM $month_from_where ORDER BY lastname, firstname ASC";
 
-	$result = mysql_query($sql);
-	$resultsnumber = mysql_numrows($result);	
+	$result = mysqli_query($db, $sql);
+	$resultsnumber = mysqli_num_rows($result);
 
   // Header("Content-Type: application/vnd.ms-excel; charset=UTF-8");
   Header("Content-Type: application/vnd.ms-excel");
   Header("Content-disposition: attachement; filename=export-".date("Ymd").($group_name != "" ? "-".$group_name : "").".csv");
-  Header("Content-Transfer-Encoding: 8bit");  
+  Header("Content-Transfer-Encoding: 8bit");
 
   // Add Byte-Order-Mark (BOM)
   if($use_utf_16LE)
@@ -68,7 +68,7 @@ $headers = array( 0 => "Name"
                 , 19 => "VoIP-Adresse, allgemein"
                 , 20 => "Postfach, allgemein"
                 , 21 => "Durchwahl, allgemein"
-                , 22 => "Straße, allgemein"
+                , 22 => "Straï¿½e, allgemein"
                 , 23 => "Postleitzahl, allgemein"
                 , 24 => "Stadt, allgemein"
                 , 25 => "Bundesland, allgemein"
@@ -82,37 +82,37 @@ $headers = array( 0 => "Name"
                 , 33 => "VoIP-Adresse, privat"
                 , 34 => "Postfach, privat"
                 , 35 => "Durchwahl, privat"
-                , 36 => "Straße, privat"
+                , 36 => "Straï¿½e, privat"
                 , 37 => "Postleitzahl, privat"
                 , 38 => "Stadt, privat"
                 , 39 => "Bundesland, privat"
                 , 40 => "Land/Region, privat"
-                , 41 => "Mobiltelefon, geschäftlich"
-                , 42 => "Telefon, geschäftlich"
-                , 43 => "E-Mail, geschäftlich"
-                , 44 => "Fax, geschäftlich"
-                , 45 => "Videoanruf, geschäftlich"
-                , 46 => "Webadresse, geschäftlich"
-                , 47 => "VoIP-Adresse, geschäftlich"
-                , 48 => "Postfach, geschäftlich"
-                , 49 => "Durchwahl, geschäftlich"
-                , 50 => "Straße, geschäftlich"
-                , 51 => "Postleitzahl, geschäftlich"
-                , 52 => "Stadt, geschäftlich"
-                , 53 => "Bundesland, geschäftlich"
-                , 54 => "Land/Region, geschäftlich" );
+                , 41 => "Mobiltelefon, geschï¿½ftlich"
+                , 42 => "Telefon, geschï¿½ftlich"
+                , 43 => "E-Mail, geschï¿½ftlich"
+                , 44 => "Fax, geschï¿½ftlich"
+                , 45 => "Videoanruf, geschï¿½ftlich"
+                , 46 => "Webadresse, geschï¿½ftlich"
+                , 47 => "VoIP-Adresse, geschï¿½ftlich"
+                , 48 => "Postfach, geschï¿½ftlich"
+                , 49 => "Durchwahl, geschï¿½ftlich"
+                , 50 => "Straï¿½e, geschï¿½ftlich"
+                , 51 => "Postleitzahl, geschï¿½ftlich"
+                , 52 => "Stadt, geschï¿½ftlich"
+                , 53 => "Bundesland, geschï¿½ftlich"
+                , 54 => "Land/Region, geschï¿½ftlich" );
 
   add(ucfmsg($headers[0]), true);
 	for($i = 1; $i < count($headers); $i++) {
 	  add(ucfmsg(utf8_encode($headers[$i])));
 	}
-	
+
   if($use_utf_16LE)
   	print mb_convert_encoding( "\r\n", 'UTF-16LE', 'UTF-8');
   else
 	  echo "\r\n";
 
-	while ($myrow = mysql_fetch_array($result))
+	while ($myrow = mysqli_fetch_array($result))
 	{
 		$rec = array();
 
@@ -126,7 +126,7 @@ $headers = array( 0 => "Name"
 		$rec[13] = $myrow["home"];
 		$rec[14] = $myrow["mobile"];
 		$rec[28] = $myrow["email"];
-		
+
     add(ucfmsg(""), true);
   	for($i = 1; $i < count($headers); $i++) {
   	  add(isset($rec[$i]) ? $rec[$i] : "");

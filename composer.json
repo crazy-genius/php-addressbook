@@ -12,7 +12,10 @@
     "require": {},
     "autoload": {
         "psr-4": {
-            "": "src/AddressBook"
-        }
+            "AddressBook\\": "src/AddressBook"
+        },
+        "files": [
+            "src/lib/gettext/gettext.inc"
+        ]
     }
 }

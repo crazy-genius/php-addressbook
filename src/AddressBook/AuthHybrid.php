@@ -55,9 +55,9 @@ class AuthHybrid extends AuthLoginDb {
                 $sql = "select user_id, domain_id, username, md5_pass from ".$table
                     ." where sso_".strtolower($provider)."_uid = '".$provider_uid."';";
 
-                $result = mysql_query($sql);
-                $rec = mysql_fetch_array($result);
-                $cnt = mysql_numrows($result);
+                $result = mysqli_query($db, $sql);
+                $rec = mysqli_fetch_array($result);
+                $cnt = mysqli_num_rows($result);
 
                 if($cnt == 1) {
                     $this->user_id  = $rec['user_id'];

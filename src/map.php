@@ -17,7 +17,7 @@
       }
     }
   }
-  
+
   $delay = 200000; // usecs before each fetching
   $base_url = "http://maps.google.ch/maps/geo?output=csv&key=".$google_maps_key;
   $first_fetch = true;
@@ -30,8 +30,9 @@
   $result = $addresses->getResults();
   $coords = array();
 
+  //EDIT_ADD_ENTRY
   //  foreach($addresses as $address) {
-  while($myrow = mysql_fetch_array($result)) {
+  while($myrow = mysqli_fetch_array($result)) {
 
     $coord['addr']   = trim(str_replace("\n", ", ", trim($myrow['address'])),",");
     $coord['html']    = "<b>".$myrow['firstname'].(isset($myrow['middlename']) ? " ".$myrow['middlename'] : "")." ".$myrow['lastname']."</b><br>";
@@ -59,7 +60,7 @@
 			if($coord['status'] == 200) {
 			  $coord['lati']   = $csvSplit[2];
 			  $coord['long']   = $csvSplit[3];
-			  
+
         $sql = "UPDATE $table 
                    SET addr_long   = '".$coord['long']."'
                      , addr_lat    = '".$coord['lati']."'
@@ -67,15 +68,15 @@
                   WHERE id        = '".$myrow['id']."'
                     AND domain_id = '$domain_id'
                     AND deprecated is null;";
-        $upd_result = mysql_query($sql);
+        $upd_result = mysqli_query($db, $sql);
 		  } else {
         $sql = "UPDATE $table 
                    SET addr_status = '".$coord['status']."'
                   WHERE id        = '".$myrow['id']."'
                     AND domain_id = '$domain_id'
                     AND deprecated is null;";
-        $upd_result = mysql_query($sql);
-		  }          
+        $upd_result = mysqli_query($db, $sql);
+		  }
 		}
 		$coords[] = $coord;
   }
@@ -83,7 +84,7 @@
   	 $coords = array();
   	 $coords[] = $single_coord;
   }
-  
+
   //
   // Concat multiple entries on one place:
   // * Sort places
@@ -94,9 +95,9 @@
   foreach ($coords as $key => $coord) {
     $longs[$key] = $coord['long'];
     $latis[$key] = $coord['lati'];
-    
+
     $coords[$key]['bubble']  = $coord['html']."<br>";
-    $coords[$key]['bubble'] .= "<b><a href='view.php?id=".$coord['id']."'>...".msg('MORE')."</a></b>";   
+    $coords[$key]['bubble'] .= "<b><a href='view.php?id=".$coord['id']."'>...".msg('MORE')."</a></b>";
   }
   array_multisort($longs, SORT_ASC, $latis, SORT_ASC, $coords);
   // print_r($coords);
@@ -118,21 +119,21 @@
           $i = 0;
 //           foreach($coords as $coord) {
           for($i = 0; $i < count($coords); $i++) {
-          	
+
           	$coord = $coords[$i];
           	if($coord['status'] != 200) {
           		continue;
           	}
-          	
-          	if(   isset($coords[$i+1]) 
+
+          	if(   isset($coords[$i+1])
                && $coords[$i]['long'] == $coords[$i+1]['long']
           	   && $coords[$i]['lati'] == $coords[$i+1]['lati']) {
-          	         	
+
           	  // Add html to next bubble
           	  $coords[$i+1]['bubble'] .= "<br><br>".$coords[$i]['bubble'];
           	  continue;
           	}
-          	
+
           	// Sample fr den Thumbnail-Marker: http://www.schockwellenreiter.de/maps/tut03.html
           	?>
           	var point<?php echo $i; ?>  = new GLatLng( <?php echo $coord['lati'].", ".$coord['long'] ?>);
@@ -165,7 +166,7 @@
   <body onload="initialize()" onunload="GUnload()">
   	<br><br>
   <div id="map_canvas" style="width: 800px; height: 600px"></div>
-  
-<?php  
-  include("include/footer.inc.php");   
+
+<?php
+  include("include/footer.inc.php");
 ?>

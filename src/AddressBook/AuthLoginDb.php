@@ -18,11 +18,11 @@ class AuthLoginDb extends AuthLoginUserPass {
             $uin = $this->getUIN();
             $sql = "select * from ".$table
                 ." where md5(concat(username,md5_pass,'".$this->getIpDate()."'))"
-                ." = '".mysql_real_escape_string($uin)."'";
+                ." = '".mysqli_real_escape_string($db_conn, $uin)."'";
 
-            $result = mysql_query($sql);
-            $rec = mysql_fetch_array($result);
-            $cnt = mysql_numrows($result);
+            $result = mysqli_query($db_conn, $sql);
+            $rec = mysqli_fetch_array($result);
+            $cnt = mysqli_num_rows($result);
         }
 
         //
@@ -35,13 +35,13 @@ class AuthLoginDb extends AuthLoginUserPass {
             $md5_pass_lower = md5(strtolower($this->getPassWord()));
 
             $sql = "select user_id, domain_id, username, md5_pass from ".$table
-                ." where username in ('".mysql_real_escape_string($username)."','"
-                .mysql_real_escape_string($username_lower)."')"
+                ." where username in ('".mysqli_real_escape_string($db_conn, $username)."','"
+                .mysqli_real_escape_string($db_conn, $username_lower)."')"
                 ." and md5_pass in ('".$md5_pass."','".$md5_pass_lower."');";
 
-            $result = mysql_query($sql);
-            $rec = mysql_fetch_array($result);
-            $cnt = mysql_numrows($result);
+            $result = mysqli_query($db_conn, $sql);
+            $rec = mysqli_fetch_array($result);
+            $cnt = mysqli_num_rows($result);
         }
 
         if($cnt == 1) {

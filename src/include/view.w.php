@@ -1,5 +1,5 @@
 <?php
-include ("include/guess.inc.php");
+include __DIR__  . DIRECTORY_SEPARATOR . "guess.inc.php";
 
 function add($value, $prefix = "") {
 
@@ -22,7 +22,7 @@ function addPhone($phone, $prefix = "") {
   	foreach($providers as $pprefix => $provider) {
   		$pos = strpos ($phone, $pprefix);
   		$use_default = preg_match('/^0[1-9]/', $phone) == 1;
-  		
+
   		if(($pos !== FALSE && $pos == 0) || ($use_default && $pprefix == $default_provider)) {
   		  $links[] = "<a href='".$provider['url'].urlencode($phone)."'>".$provider['name']."</a>";
   		  $urls[]  = "<a href='".$provider['url'].urlencode($phone)."'>";
@@ -107,7 +107,7 @@ function addGroup($r, $members, $title = "") {
 }
 
 function showOneEntry($r, $only_phone = false) {
-	
+
 	 global $db, $table, $table_grp_adr, $table_groups, $print, $is_fix_group, $mail_as_image, $page_ext_qry;
 
 	 $view = "";
@@ -123,7 +123,7 @@ function showOneEntry($r, $only_phone = false) {
        $view .= ($r['photo'] != "" ? '<img alt="Embedded Image" width=75 src="data:image/jpg;base64,'.$b64.'"/><br>' : "");
      }
    }
-  
+
    if(! $only_phone) {
      $view .= ($r['title'] != ""?"<i>":"").add($r['title']).($r['title'] != ""?"</i>":"");
      $view .= add($r['company']);
@@ -178,10 +178,10 @@ function showOneEntry($r, $only_phone = false) {
 	              AND $table.id = ".$r['id']."
 	              AND $table_grp_adr.group_id  = $table_groups.group_id";
 
-	   $result = mysql_query($sql, $db);
+	   $result = mysqli_query($db, $sql);
 
 	   $first = true;
-	   while($result && $g = mysql_fetch_array($result)) {
+	   while($result && $g = mysqli_fetch_array($result)) {
 	   	 if($first)
 	   	   echo "<br /><i>".ucfmsg('MEMBER_OF').": ";
 	   	 else

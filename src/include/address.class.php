@@ -3,10 +3,10 @@
 require_once "translations.inc.php";
 include "phone.intl_prefixes.php";
 include "birthday.class.php";
-      
+
 function getIfSetFromAddr($addr_array, $key) {
 
-	if(isset($addr_array[$key])) {	  
+	if(isset($addr_array[$key])) {
 	  // $result = mysql_real_escape_string($addr_array[$key]);
 	  $result = $addr_array[$key];
 	} else {
@@ -21,7 +21,7 @@ function trimAll($r) {
   	$res[$key] = trim($val);
   }
   return $res;
-}   
+}
 
 function echoIfSet($addr_array, $key) {
 	echo getIfSetFromAddr($addr_array, $key);
@@ -33,26 +33,26 @@ function deleteAddresses($part_sql) {
   global $keep_history, $domain_id, $base_from_where, $table, $table_grp_adr, $table_groups;
 
   $sql = "SELECT * FROM $base_from_where AND ".$part_sql;
-  $result = mysql_query($sql);
-  $resultsnumber = mysql_numrows($result);
+  $result = mysqli_query($db, $sql);
+  $resultsnumber = mysqli_num_rows($result);
 
-  $is_valid = $resultsnumber > 0; 
+  $is_valid = $resultsnumber > 0;
 
   if($is_valid) {
   	if($keep_history) {
   	  $sql = "UPDATE $table
   	          SET deprecated = now()
   	          WHERE deprecated is null AND ".$part_sql." AND domain_id = ".$domain_id;
-  	  mysql_query($sql);
+  	  mysqlI_query($db, $sql);
   	  $sql = "UPDATE $table_grp_adr
   	          SET deprecated = now()
   	          WHERE deprecated is null AND ".$part_sql." AND domain_id = ".$domain_id;
-  	  mysql_query($sql);
+  	  mysqli_query($db, $sql);
   	} else {
   	  $sql = "DELETE FROM $table_grp_adr WHERE ".$part_sql." AND domain_id = ".$domain_id;
-  	  mysql_query($sql);
+  	  mysqli_query($db, $sql);
   	  $sql = "DELETE FROM $table         WHERE ".$part_sql." AND domain_id = ".$domain_id;
-  	  mysql_query($sql);
+  	  mysqli_query($db, $sql);
     }
   }
 
@@ -101,22 +101,22 @@ function saveAddress($addr_array, $group_name = "") {
                                , '".getIfSetFromAddr($addr_array, 'notes')."'      notes
                                , now(), now()
                             FROM ".$src_tbl;
-    $result = mysql_query($sql);
-    
-    if(mysql_errno() > 0) {
-      echo "MySQL: ".mysql_errno().": ".mysql_error();
+    $result = mysqli_query($db, $sql);
+
+    if(mysqli_errno() > 0) {
+      echo "MySQL: ".mysqli_errno().": ".mysqli_error();
     }
 
     $sql = "SELECT max(id) max_id from $table";
-    $result = mysql_query($sql);
-    $rec = mysql_fetch_array($result);
+    $result = mysqli_query($db, $sql);
+    $rec = mysqli_fetch_array($result);
     $id = $rec['max_id'];
 
     if(!isset($addr_array['id']) && $group_name) {
     	$sql = "INSERT INTO $table_grp_adr SELECT $domain_id domain_id, $id id, group_id, now(), now(), NULL FROM $table_groups WHERE group_name = '$group_name'";
-    	$result = mysql_query($sql);
+    	$result = mysqli_query($db, $sql);
     }
-    
+
     return $id;
 }
 
@@ -134,7 +134,7 @@ function updateAddress($addr, $keep_photo = true) {
 	if($is_valid)
 	{
 		if($keep_history) {
-		
+
 			// Get current photo, if "$keep_photo"
 			if($keep_photo) {
 		 	  $r = $addresses->nextAddress()->getData();
@@ -146,8 +146,8 @@ function updateAddress($addr, $keep_photo = true) {
 		           WHERE deprecated is null
 		             AND id	       = '".$addr['id']."'
 		             AND domain_id = '".$domain_id."';";
-    	$result = mysql_query($sql);
-    	
+    	$result = mysqli_query($db, $sql);
+
 		  saveAddress($addr);
 		} else {
 	    $sql = "UPDATE $table SET firstname = '".$addr['firstname']."'
@@ -178,7 +178,7 @@ function updateAddress($addr, $keep_photo = true) {
 	                            , modified  = now()
 		                        WHERE id        = '".$addr['id']."'
 		                          AND domain_id = '$domain_id';";
-		  $result = mysql_query($sql);
+		  $result = mysqli_query($db, $sql);
     }
 		// header("Location: view?id=$id");
     }
@@ -191,7 +191,7 @@ $phone_delims = array("'", '/', "-", " ", "(", ")", ".");
 class Address {
 
     private $address; // mother of all data
-    
+
     private $phones;
     private $emails;
 
@@ -250,30 +250,30 @@ class Address {
     public function unifyPhones( $phones
     	 	 	 	   , $prefix = ""
                                , $remove_prefix = false ) {
-                              	
+
       global $intl_prefix_reg, $default_provider, $phone_delims;
-                              	
+
       $unifons = array();
-                              	
+
      // Remove all optical delimiters
      foreach($phones as $phone) {
     	foreach($phone_delims as $phone_delim) {
     		$phone = str_replace($phone_delim, "", $phone);
     	}
-                
+
     	if($prefix != "" || $remove_prefix = true) {
-    		
+
     	  // Replace 00xxx => +xx
     	  $phone = preg_replace('/^00/', "+", $phone);
-        
+
     	  // Replace 0 with $prefix (00 is already "+")
     	  if($prefix != "") {
     	    $phone = preg_replace('/^0/', $prefix, $phone);
     	  }
-        
+
     	  // Replace xx (0) yy => xxyy
-        $phone = preg_replace("/^(".$intl_prefix_reg.")0/", '${1}', $phone);   		
-                
+        $phone = preg_replace("/^(".$intl_prefix_reg.")0/", '${1}', $phone);
+
     	  // Replace +xx with 0
     	  if($remove_prefix) {
     	  	if(isset($default_provider)) {
@@ -284,19 +284,19 @@ class Address {
     	  	$phone = preg_replace("/^(".$remove_prefixes.")/", "0", $phone);
         }
       }
-        $unifons[] = $phone;  
+        $unifons[] = $phone;
       }
       return $unifons;
 
     }
-    
+
 	public function unifyPhone( $prefix = ""
                               , $remove_prefix = false ) {
        $phones = array();
        $phones[] = $this->firstPhone();
-       
+
        $unifons = $this->unifyPhones($phones, $prefix, $remove_prefix);
-       return $unifons[0];            
+       return $unifons[0];
     }
 
     //
@@ -328,21 +328,22 @@ class Addresses {
     private $result;
 
     function likePhone($row, $searchword) {
-    	
+
     	global $phone_delims;
-    	
+
     	$replace = $row;
     	$like    = "'$searchword'";
      	foreach($phone_delims as $phone_delim) {
-    	  $replace = "replace(".$replace.", '".mysql_real_escape_string($phone_delim)."','')"; 
-    	  $like    = "replace(".$like.   ", '".mysql_real_escape_string($phone_delim)."','')"; 
-     	}     	
-     	return $replace." LIKE CONCAT('%',".$like.",'%')";    	
+    	  $replace = "replace(".$replace.", '".mysql_real_escape_string($phone_delim)."','')";
+    	  $like    = "replace(".$like.   ", '".mysql_real_escape_string($phone_delim)."','')";
+     	}
+     	return $replace." LIKE CONCAT('%',".$like.",'%')";
     }
 
-    protected function loadBy($load_type, $searchstring, $alphabet = "") {
+    protected function loadBy($load_type, $searchstring, $alphabet = "")
+    {
 
-	    global $base_from_where, $table;
+	    global $base_from_where, $table, $db;
 
      	$sql = "SELECT DISTINCT $table.* FROM $base_from_where";
 
@@ -394,7 +395,7 @@ class Addresses {
           $sql .= " LIMIT ".($page-1)*$pagesize.",".$pagesize;
       }
       //*/
-      $this->result = mysql_query($sql);
+      $this->result = mysqli_query($db, $sql);
     }
 
     public static function withSearchString($searchstring, $alphabet = "") {
@@ -411,7 +412,7 @@ class Addresses {
 
     public function nextAddress() {
 
-    	$myrow = mysql_fetch_array($this->result);
+    	$myrow = mysqli_fetch_array($this->result);
     	if($myrow) {
 		      return new Address(trimAll($myrow));
 		  } else {
@@ -422,9 +423,9 @@ class Addresses {
     public function getResults() {
     	return $this->result;
     }
-    
+
     public function count() {
-    	return mysql_numrows($this->getResults());
+    	return mysqli_numrows($this->getResults());
     }
 }
 ?>

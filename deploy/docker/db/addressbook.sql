@@ -6,10 +6,13 @@
 --
 -- $LastChangedDate$
 -- $Rev$
--- 
+--
 --
 
-CREATE TABLE addressbook (
+CREATE DATABASE IF NOT EXISTS addressbook;
+USE addressbook;
+
+CREATE TABLE IF NOT EXISTS addressbook (
   domain_id int(9) unsigned NOT NULL default 0,
   id int(9) unsigned NOT NULL,
   firstname varchar(255) NOT NULL,
@@ -55,7 +58,7 @@ CREATE TABLE addressbook (
   KEY deprecated_domain_id_idx (deprecated,domain_id)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE group_list (
+CREATE TABLE IF NOT EXISTS group_list (
   `domain_id` int(9) unsigned NOT NULL default 0,
   `group_id` int(9) unsigned NOT NULL auto_increment,
   `group_parent_id` int(9) default NULL,
@@ -65,10 +68,10 @@ CREATE TABLE group_list (
   `group_name` varchar(255) NOT NULL default '',
   `group_header` mediumtext NOT NULL,
   `group_footer` mediumtext NOT NULL,
-  PRIMARY KEY (group_id,deprecated,domain_id)
+  PRIMARY KEY (group_id,domain_id)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE address_in_groups (
+CREATE TABLE IF NOT EXISTS address_in_groups (
   `domain_id` int(9) unsigned NOT NULL default 0,
   `id` int(9) unsigned NOT NULL default 0,
   `group_id` int(9) unsigned NOT NULL default 0,
@@ -78,7 +81,7 @@ CREATE TABLE address_in_groups (
   PRIMARY KEY (`group_id`,`id`, deprecated)
 ) DEFAULT CHARSET=utf8;
 
-CREATE TABLE month_lookup (
+CREATE TABLE IF NOT EXISTS month_lookup (
   `bmonth` varchar(50) NOT NULL default '',
   `bmonth_short` char(3) NOT NULL default '',
   `bmonth_num` int(2) unsigned NOT NULL default 0,
@@ -99,7 +102,7 @@ INSERT INTO `month_lookup` VALUES ('October', 'Oct', 10);
 INSERT INTO `month_lookup` VALUES ('November', 'Nov', 11);
 INSERT INTO `month_lookup` VALUES ('December', 'Dec', 12);
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
   `domain_id` int(9) unsigned NOT NULL DEFAULT '0',
   `username` char(128) NOT NULL,

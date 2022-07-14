@@ -4,7 +4,7 @@
 
   // List external phonebook providers
   $default_provider = "+41";
-   
+
   // Guess homepage from e-mail, excluding the freemailers defined below
   $homepage_guess  = true;
 
@@ -52,7 +52,7 @@
   //
   // Title
   //
-  $title_exts = array( 
+  $title_exts = array(
                      //
                      // English
                      //
@@ -96,10 +96,10 @@
                      // German
                      //
                      , "\\w*ADMINISTRATOR(IN)"
-                     , "\\w*(ANTWALT|ANTWÄTIN)" 
-                     , "\\w*ASSISTENT(IN)?" 
-                     , "\\w*ARZT|\\w*ÄRZTIN" 
-                     , "\\w*ARCHITEKT(IN)?" 
+                     , "\\w*(ANTWALT|ANTWÄTIN)"
+                     , "\\w*ASSISTENT(IN)?"
+                     , "\\w*ARZT|\\w*ÄRZTIN"
+                     , "\\w*ARCHITEKT(IN)?"
                      , "\\w*BERATER(IN)?"
                      , "\\w*BETRIEBS(RAT|RÄTIN)?"
                      , "\\w*BETREUER(IN)?"
@@ -125,7 +125,7 @@
                      , "\\w*VERWALTUNGS(RAT|RÄTIN)"
                      , "\\w*VORSTEHER(IN)?"
                      , "\\w*VORSITZENDE(R)?"
-                     
+
                      );
 
   // List of excluded sites in "Homepage guessing"
@@ -155,4 +155,3 @@
                        , "web.de"
                        , "yahoo."
                       );
-?>

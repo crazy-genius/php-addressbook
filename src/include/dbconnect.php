@@ -1,13 +1,11 @@
 <?php
-/*
- * Core file for library and parameter handling:
- *
- * - $LastChangedDate$
- * - $Rev$
- */
-include("config/config.php");
 
-global $db; // declare as global to be used in include files
+use AddressBook\AuthLoginFactory;
+
+
+require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "config/config.php";
+
+global $db, $dbname, $dbuser, $dbserver; // declare as global to be used in include files
 
 // Suppress caching, force refresh on every reload.
 header("Cache-Control: no-cache, must-revalidate");
@@ -27,13 +25,12 @@ if ($read_only) {
 
 // --- Connect to DB, retry 5 times ---
 for ($i = 0; $i < 5; $i++) {
-
-    $level = error_reporting();
-    error_reporting(E_ERROR);
     $db = mysqli_connect("$dbserver", "$dbuser", "$dbpass");
-    error_reporting($level);
+    if ($db === false) {
+        continue;
+    }
 
-    $errno = mysqli_errno();
+    $errno = mysqli_errno($db);
     if ($errno == 1040 || $errno == 1226 || $errno == 1203) {
         sleep(1);
     } else {
@@ -41,7 +38,7 @@ for ($i = 0; $i < 5; $i++) {
     }
 }
 
-$get_vars = array('id');
+$get_vars = ['id'];
 
 foreach ($get_vars as $get_var) {
     if (isset($_GET[$get_var])) {
@@ -54,15 +51,15 @@ foreach ($get_vars as $get_var) {
 }
 
 // Copy only used variables into global space.
-$get_vars = array('searchstring', 'alphabet', 'group', 'resultnumber'
-, 'submit', 'update', 'delete', 'part'
-, 'new', 'add', 'remove', 'edit', 'del_format');
+$get_vars = ['searchstring', 'alphabet', 'group', 'resultnumber'
+    , 'submit', 'update', 'delete', 'part'
+    , 'new', 'add', 'remove', 'edit', 'del_format'];
 
 foreach ($get_vars as $get_var) {
     if (isset($_GET[$get_var])) {
-        ${$get_var} = mysqli_real_escape_string($_GET[$get_var], $db);
+        ${$get_var} = mysqli_real_escape_string($db, $_GET[$get_var]);
     } elseif (isset($_POST[$get_var])) {
-        ${$get_var} = mysqli_real_escape_string($_POST[$get_var], $db);
+        ${$get_var} = mysqli_real_escape_string($db, $_POST[$get_var]);
     } else {
         ${$get_var} = null;
     }
@@ -73,13 +70,13 @@ foreach ($get_vars as $get_var) {
 //
 if (!isset($disp_cols)) {
     $disp_cols
-        = array("select"
-    , "lastname"
-    , "firstname"
-    , "email"
-    , "telephone"
-    , "edit"
-    , "details");
+        = ["select"
+        , "lastname"
+        , "firstname"
+        , "email"
+        , "telephone"
+        , "edit"
+        , "details"];
 }
 
 //
@@ -124,7 +121,7 @@ if (!isset($map_guess)) $map_guess = true;
 if (!isset($mail_as_image)) $mail_as_image = false;
 
 // Use images for e-mail addresses
-if (!isset($mail_accept)) $mail_accept = array();
+if (!isset($mail_accept)) $mail_accept = [];
 
 // Define default ajax mode
 if (!isset($use_ajax)) $use_ajax = true;
@@ -188,12 +185,12 @@ if (!$is_fix_group and $group_name) {
     $page_ext_qry = "$page_ext?group=$group_name&amp;";
     $page_ext = "$page_ext?group=$group_name";
 }
+include_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . "prefs.inc.php";
+include_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . "translations.inc.php";
+include_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . "mailer.inc.php";
 
-include("prefs.inc.php");
-include("translations.inc.php");
-include("mailer.inc.php");
 if (!$db) {
-    include "include/install.php";
+    include_once dirname(__DIR__) . DIRECTORY_SEPARATOR . "include/install.php";
 }
 mysqli_select_db($db, (string)$dbname);
 // Setup the UTF-8 parameters:
@@ -201,12 +198,8 @@ mysqli_select_db($db, (string)$dbname);
 mysqli_query($db, "set character set utf8;");
 mysqli_query($db, "SET NAMES `utf8`");
 
-// Bug: #139 - Strict mode problem
-mysqli_query($db, "SET SQL_MODE = 'STRICT_TRANS_TABLES';");
-mysqli_query($db, "SET SQL_MODE = 'MYSQL40';");
-
-include("login.inc.php");
-include("version.inc.php");
+include dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . "login.inc.php";
+include dirname(__DIR__) . DIRECTORY_SEPARATOR . 'include' . DIRECTORY_SEPARATOR . "version.inc.php";
 
 // Apply the table prefix, if available
 $table = $table_prefix . $table;
@@ -218,31 +211,30 @@ $usertable = $table_prefix . $usertable;
 $login = AuthLoginFactory::getBestLogin();
 
 if (!isset($required_roles)) {
-    $required_roles = array();
+    $required_roles = [];
 }
 
 if (!$login->hasRoles($required_roles)) {
-    include("include/format.inc.php");
+    include dirname(__DIR__)  . DIRECTORY_SEPARATOR . "include/format.inc.php";
     echo "<title>" . ucfmsg("ADDRESS_BOOK") . "</title>";
-    include "include/login.inc.html";
+    include dirname(__DIR__)  . DIRECTORY_SEPARATOR . "include/login.inc.html";
     die;
-} else {
-
-    // Get domain
-    $user = $login->getUser();
-    $username = $user->getName();
-    $domain_id = $user->getDomain();
-
-    // Check "read only" of user
-    $read_only = $read_only || $user->hasRole("readonly");
-
-    // Check "forced group"
-    if ($user->getGroup() != "") {
-        $is_fix_group = true;
-        $group = $user->getGroup();
-        $group_name = $user->getGroup();
-    };
 }
+
+// Get domain
+$user = $login->getUser();
+$username = $user->getName();
+$domain_id = $user->getDomain();
+
+// Check "read only" of user
+$read_only = $read_only || $user->hasRole("readonly");
+
+// Check "forced group"
+if ($user->getGroup() != "") {
+    $is_fix_group = true;
+    $group = $user->getGroup();
+    $group_name = $user->getGroup();
+};
 
 if (isset($domain) && isset($domain[$domain_id]) && isset($domain[$domain_id]['skin'])) {
     $skin_color = $domain[$domain_id]['skin'];
@@ -252,11 +244,11 @@ if (isset($domain) && isset($domain[$domain_id]) && isset($domain[$domain_id]['s
 // import all variables in a bit secured way: Remove HTML Tags.
 foreach ($_REQUEST as $key => $value) {
     // Allow all tags in headers and footers
-    if (in_array($key, array('domain_id', 'read_only'))) {
+    if (in_array($key, ['domain_id', 'read_only'])) {
 
         // Security-Fix: ignore this fields!!
 
-    } elseif (in_array($key, array('group_header', 'group_footer'))) {
+    } elseif (in_array($key, ['group_header', 'group_footer'])) {
         ${$key} = $value;
 
         // Handle arrays
@@ -276,13 +268,13 @@ foreach ($_REQUEST as $key => $value) {
 // ------------------- Group query handling ------------------------
 //
 
-$select_groups = "SELECT groups.*
+$select_groups = "SELECT `groups`.*
        	               , parent_groups.group_name  parent_name
        	               , parent_groups.group_id    parent_id
-       	            FROM $table_groups AS groups
+       	            FROM $table_groups AS `groups`
                LEFT JOIN $table_groups AS parent_groups
-                      ON groups.group_parent_id = parent_groups.group_id
-                   WHERE groups.domain_id = $domain_id";
+                      ON `groups`.group_parent_id = parent_groups.group_id
+                   WHERE `groups`.domain_id = $domain_id";
 
 // Create "n-level" non-locking recursion
 $max_level = 3;
@@ -352,7 +344,7 @@ $group_from_where = $groups_from_where . "group_name = '$group_name' ";
 
 if (isset($part)) {
     $participants = array_filter(explode(';', $part));
-    $part_ids = array();
+    $part_ids = [];
 
     foreach ($participants as $one_part) {
         if (ctype_digit($one_part)) {
@@ -360,7 +352,7 @@ if (isset($part)) {
         }
     }
     $part_sql = "(" . $table . ".id = '" . implode("' OR id = '", $part_ids) . "')";
-} else if (isset($id)) {
+} elseif (isset($id)) {
     $part_sql = $table . ".id = '$id'";
 }
 
