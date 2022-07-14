@@ -115,7 +115,7 @@ function label2adr($address)
 //
 
 //
-// FROM: dbconnect.php
+// FROM: configure.php
 //
 class PhpAddr
 {

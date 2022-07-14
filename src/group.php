@@ -1,12 +1,13 @@
 <?php
 
-include("include/dbconnect.php");
+use AddressBook\DBAL\Database;
+
+include("include/configure.php");
 include("include/format.inc.php");
 echo "<title>Groups | Address Book</title>";
 include("include/header.inc.php");
 
-global $db;
-
+$dbal = Database::getInstance();
 
 echo "<h1>" . ucfmsg('GROUPS') . "</h1>";
 
@@ -112,20 +113,22 @@ if ($read_only) {
         echo "<div class='msgbox'>Users removed. <br /><i>return to <a href='./?group=$group_name'>group page \"$group_name\"</a>.</i></div>";
     } elseif ($update) {
         $sql = "SELECT * FROM $table_groups WHERE group_id=$id";
-        $result = mysqli_query($db, $sql);
-        $resultsnumber = mysqli_num_rows($result);
+
+        $result = $dbal->query($sql);
+        $resultsnumber = count($result);
 
         if ($resultsnumber > 0) {
             if (!is_numeric($group_parent_id))
                 $gpid = 'null';
-            else
+            else {
                 $gpid = $group_parent_id;
+            }
             $sql = "UPDATE $table_groups SET group_name='$group_name'" .
                 ", group_header='$group_header'" .
                 ", group_footer='$group_footer'" .
                 ", group_parent_id=$gpid" .
                 " WHERE group_id=$id";
-            $result = mysqli_query($db, $sql);
+            $result = $dbal->query($sql);
 
             // header("Location: view?id=$id");
 
@@ -198,8 +201,8 @@ if ($read_only) {
         <?php
 
     } else {
-        $result = mysqli_query($db, $select_groups . " ORDER BY groups.group_name");
-        $resultsnumber = mysqli_num_rows($result);
+        $result = $dbal->query($select_groups . " ORDER BY groups.group_name");
+        $resultsnumber = count($result);
 
         ?>
         <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
@@ -210,7 +213,7 @@ if ($read_only) {
             <hr/>
 
             <?php
-            while ($myrow = mysqli_fetch_array($result)) {
+            foreach ($result as $myrow) {
                 echo "<input type='checkbox' name='selected[]' value='" . $myrow['group_id'] . "' title='Select (" . $myrow['group_name'] . ")'/>";
                 if ($myrow['parent_name'] != "") {
                     echo $myrow['group_name'] . " <i>(" . $myrow['parent_name'] . ")</i><br />";

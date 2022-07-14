@@ -8,7 +8,7 @@
   // - http://forum.de.selfhtml.org/archiv/2007/6/t154117/
   //
 
-  include ("include/dbconnect.php");
+  include("include/configure.php");
 
   global $db;
 

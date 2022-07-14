@@ -1,6 +1,6 @@
 <?php
 
-include ("include/dbconnect.php");
+include("include/configure.php");
 
 if ($id) {
 
@@ -8,12 +8,12 @@ if ($id) {
 
    $result = mysql_query($sql, $db);
    $links  = mysqli_fetch_array($result);
-   
+
    require "include/export.vcard.php";
-   
+
    header2vcard($links);
    echo address2vcard($links);
-	
+
 } else {
 
 	echo "You need to select an ID number of a data entry";

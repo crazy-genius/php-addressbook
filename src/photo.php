@@ -1,7 +1,7 @@
 <?php
-	include ("include/dbconnect.php");
+	include("include/configure.php");
 	include ("include/photo.class.php");
-	
+
 if ($id) {
 
    $sql = "SELECT photo FROM $base_from_where AND $table.id='$id'";

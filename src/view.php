@@ -1,17 +1,14 @@
 <?php
-include __DIR__  . DIRECTORY_SEPARATOR . "include/dbconnect.php";
-include __DIR__  . DIRECTORY_SEPARATOR . "include/format.inc.php";
+include __DIR__ . DIRECTORY_SEPARATOR . "include/configure.php";
+include __DIR__ . DIRECTORY_SEPARATOR . "include/format.inc.php";
 
-global $db;
+$dbal = AddressBook\DBAL\Database::getInstance();
 
 $resultsnumber = 0;
 if ($id) {
-
     $sql = "SELECT * FROM $base_from_where AND $table.id='$id'";
-    $result = mysqli_query($db, $sql);
-    $r = mysqli_fetch_array($result);
-
-    $resultsnumber = mysqli_num_rows($result);
+    $r = $dbal->query($sql);
+    $resultsnumber = count($r);
 }
 
 if (($resultsnumber == 0 && !isset($all)) || (!$id && !isset($all))) {
@@ -28,7 +25,6 @@ if (($resultsnumber == 0 && !isset($all)) || (!$id && !isset($all))) {
         include("include/header.inc.php");
     } else {
         echo '	<style type="text/css"> <!-- body{background:none;}#container{margin:0 2px 0;width:700px;} @media only screen and (max-device-width: 480px) {#container {margin:0 2px 0;width:99%;}} --> </style></head><body><div id="container"><div>';
-        // echo '</head><body onload="javascript:window.setTimeout(window.print(self), 1000)";>';
     }
 }
 
@@ -111,5 +107,6 @@ if ($id) {
     echo "<div class'msgbox'>Please select a valid entry.</div>";
 
 }
+
 include("include/footer.inc.php");
-?>
+

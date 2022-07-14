@@ -1,6 +1,6 @@
 <?php
 
-	include ("include/dbconnect.php");
+	include("include/configure.php");
 	include ("include/format.inc.php");
 ?>
 	<meta HTTP-EQUIV="REFRESH" content="3;url=.">

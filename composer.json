@@ -9,7 +9,9 @@
         }
     ],
     "minimum-stability": "stable",
-    "require": {},
+    "require": {
+        "doctrine/dbal": "^3.3"
+    },
     "autoload": {
         "psr-4": {
             "AddressBook\\": "src/AddressBook"

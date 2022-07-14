@@ -1,6 +1,6 @@
 <?php
 
-include("include/dbconnect.php");
+include("include/configure.php");
 
 global $db;
 

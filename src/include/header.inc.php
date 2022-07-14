@@ -1,15 +1,14 @@
 <?php
 
+use AddressBook\DAO\TableGroupsDao;
 
-global $db;
 ?>
-
 </head>
 <body>
 <div id="container">
     <div id="top">
-
-        <?php if (isset($userlist) /* && !(isset($iplist) && hasRoleFromIP($iplist))*/) { ?>
+        <?php
+        if (isset($userlist)) { ?>
             <form name="logout" method="post" class="header">
                 <input type="hidden" name="logout" value="yes"/>
                 <?php if (isset($username)) echo "<b>(" . $username . ")</b> "; ?>
@@ -28,12 +27,9 @@ global $db;
         <?php include dirname(__DIR__) . DIRECTORY_SEPARATOR . "include/nav.inc.php"; ?>
     </div>
     <div id="content">
-
         <?php
-        if ($group_name != "") {
-            $sql = "SELECT * FROM $table_groups WHERE group_name = '$group_name'";
-            $result = mysqli_query($db, $sql);
-            $group_myrow = mysqli_fetch_array($result);
-            echo ($group_myrow ? $group_myrow['group_header'] : '');
+        if ($group_name !== null && $group_name !== "") {
+            $group_myrow = TableGroupsDao::getGroupByName($group_name);
+            echo($group_myrow ? $group_myrow['group_header'] : '');
         }
         ?>

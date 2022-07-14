@@ -1,5 +1,5 @@
 <?php
-	include ("include/dbconnect.php");
+	include("include/configure.php");
 	include ("include/format.inc.php");
 
 	if(! $user->hasRole("root")) {

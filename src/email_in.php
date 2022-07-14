@@ -1,6 +1,6 @@
 <?phpko
 
-include "include/dbconnect.php";
+include "include/configure.php";
 include "include/export.vcard.php";
 include "include/view.w.php";
 
@@ -12,22 +12,22 @@ function strip_html_tags( $text )
             '@<script[^>]*?>.*?</script>@siu'
         ),
         array(
-            ' ', ' '), 
+            ' ', ' '),
         $text );
-      
+
     return $result;
 }
-function br2nl($string){ 
+function br2nl($string){
 	$result = $string;
-  $result = str_replace('<br>',   "\r\n", $result); 
-  $result = str_replace('<br >',  "\r\n", $result); 
-  $result = str_replace('<Br>',   "\r\n", $result); 
-  $result = str_replace('<BR>',   "\r\n", $result); 
-  $result = str_replace('<BR >',  "\r\n", $result); 
-  $result = str_replace('<br/>',  "\r\n", $result); 
-  $result = str_replace('<br />', "\r\n", $result); 
-  return $result; 
-} 
+  $result = str_replace('<br>',   "\r\n", $result);
+  $result = str_replace('<br >',  "\r\n", $result);
+  $result = str_replace('<Br>',   "\r\n", $result);
+  $result = str_replace('<BR>',   "\r\n", $result);
+  $result = str_replace('<BR >',  "\r\n", $result);
+  $result = str_replace('<br/>',  "\r\n", $result);
+  $result = str_replace('<br />', "\r\n", $result);
+  return $result;
+}
 
 function flattenParts($messageParts, $flattenedParts = array(), $prefix = '', $index = 1, $fullPrefix = true) {
 
@@ -54,7 +54,7 @@ function flattenParts($messageParts, $flattenedParts = array(), $prefix = '', $i
 function getPart($connection, $messageNumber, $partNumber, $encoding) {
 
     $data = imap_fetchbody($connection, $messageNumber, $partNumber);
-    
+
     switch($encoding) {
         case 3:  return base64_decode($data); // BASE64
         case 4:  return imap_qprint($data);   // QUOTED_PRINTABLE
@@ -76,10 +76,10 @@ echo nl2br(print_r($hds, true));
 // Check if mail is authorized
 $to  = $hds->from[0]->mailbox."@".$hds->from[0]->host;
 if(count($mail_accept) > 0 && !in_array($to, $mail_accept) {
-	
+
 	// delete without warning
 	imap_delete ($connection, "$messageNumber");
-	
+
 	// process next mail
 	die;
 }
@@ -121,7 +121,7 @@ foreach($flattenedParts as $partNumber => $part) {
               $message = strip_tags($message);
               $message = html_entity_decode($message, ENT_COMPAT, "UTF-8");
             }
-              
+
         break;
         case 1: # multi-part headers,       ignore
         case 2: # attached message headers, ignore
@@ -134,10 +134,10 @@ foreach($flattenedParts as $partNumber => $part) {
             // $filename = getFilenameFromPart($part);
             $filename = "";
             if($filename) { # it's an attachment
-                
+
                 $attachment = getPart($connection, $messageNumber, $partNumber, $part->encoding);
                 // now do something with the attachment, e.g. save it somewhere
-                
+
                 # It's a vcard
                 // ...
             }
@@ -163,12 +163,12 @@ $mail_text = ob_get_clean();
 
 //------------------ Sending the e-Mail
 $subject = "vCard for: ".$addr['firstname'].(isset($addr['middlename']) ? " ".$addr['middlename']:"")." ".$addr['lastname'].(isset($addr['company']) ? " (".$addr['company'].")":"");
-$boundary = md5(date('r', time())); 
+$boundary = md5(date('r', time()));
 
 // Define Headers we want passed:
-// *  Note that they are separated with \r\n 
-$headers  = "From: ".$mail_user."\r\nReply-To: ".$mail_user; 
-$headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$boundary."\""; 
+// *  Note that they are separated with \r\n
+$headers  = "From: ".$mail_user."\r\nReply-To: ".$mail_user;
+$headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$boundary."\"";
 
 $body  = "--PHP-mixed-".$boundary."\r\n";
 $body .= "Content-Type: text/html; charset=\"utf-8\"";
@@ -182,10 +182,10 @@ $body .= "\r\n\r\n";
 $body .= $vcard;
 $body .= "--PHP-mixed-".$boundary."\r\n";
 
-$mail_sent = mail( $to, $subject, $body, $headers ); 
+$mail_sent = mail( $to, $subject, $body, $headers );
 
 if(imap_mail_move($connection, "$messageNumber", "INBOX.Processed")) {
-	
+
 	echo "Mail moved ".$to;
 }
 imap_expunge($connection);

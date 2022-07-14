@@ -4,11 +4,12 @@
 
 global $projectRoot, $includes;
 
-include_once $includes . DS . 'dbconnect.php';
+include_once $includes . DS . 'configure.php';
 include_once $includes . DS . 'format.inc.php';
 include_once $includes . DS . 'photo.class.php';
 
 ?>
+
 <title><?php echo ucfmsg("ADDRESS_BOOK") . ($group_name != "" ? " ($group_name)" : ""); ?></title>
 <?php require_once $includes . DS . 'header.inc.php'; ?>
 
@@ -454,5 +455,7 @@ if (isset($table_groups) and $table_groups != "" and !$is_fix_group) { ?>
 
             //-->
         </script>
-        <?php include("include/footer.inc.php"); ?>
+
         <script type="text/javascript" src="js/tablesort.min.js"></script>
+
+<?php include("include/footer.inc.php"); ?>
