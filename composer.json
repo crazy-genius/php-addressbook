@@ -1,0 +1,13 @@
+{
+    "name": "minkin/php-addressbook",
+    "description": "Forked forked from chatelao/php-addressbook",
+    "type": "project",
+    "license": "GNU AFFERO GENERAL PUBLIC LICENSE",
+    "authors": [
+        {
+            "name": "chatelao"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
