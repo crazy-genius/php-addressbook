@@ -33,7 +33,7 @@ ALTER TABLE `addressbook` ADD `notes`    mediumtext     NULL after phone2;
 ALTER TABLE `addressbook` ADD `created`  DATETIME       NULL after `notes`;
 ALTER TABLE `addressbook` ADD `modified` DATETIME       NULL after `created` ;
 --
--- Authentication / Autorisation
+-- Auth / Autorisation
 --
 ALTER TABLE `addressbook` ADD `password` VARCHAR( 256 ) NULL after modified;
 ALTER TABLE `addressbook` ADD `login`    DATE           NULL after `password`;

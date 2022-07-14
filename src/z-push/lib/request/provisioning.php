@@ -61,7 +61,7 @@ class Provisioning extends RequestProcessor {
 
         // if this is a regular provisioning require that an authenticated remote user
         if ($rwstatus < SYNC_PROVISION_RWSTATUS_PENDING) {
-            ZLog::Write(LOGLEVEL_DEBUG, "RequestProcessor::HandleProvision(): Forcing delayed Authentication");
+            ZLog::Write(LOGLEVEL_DEBUG, "RequestProcessor::HandleProvision(): Forcing delayed Auth");
             self::Authenticate();
         }
 

@@ -36,7 +36,7 @@ foreach($file_lines as $ldif_line) {
 }
 
 //
-// Begin LDIF-2-Addressbook convertor
+// Begin LDIF-2-AddressBook convertor
 //
 function getIfSetDouble($ldif_record, $key) {                               
 	                                                                    

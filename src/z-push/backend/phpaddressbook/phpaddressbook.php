@@ -2,12 +2,12 @@
 /***********************************************
 * File      :   php-addressbook.php
 * Project   :   Z-Push
-* Descr     :   A backend is for the PHP-Addressbook:
+* Descr     :   A backend is for the PHP-AddressBook:
 *               http://php-addressbook.sourceforge.net
 *
 * Created   :   16.07.2010
 * Updated   :   11.04.2016
-* chatelao/ät/users.sourceforge.net
+* chatelao/ï¿½t/users.sourceforge.net
 *
 * Consult LICENSE file for details
 ************************************************/

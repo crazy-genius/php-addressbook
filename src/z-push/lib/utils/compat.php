@@ -166,7 +166,7 @@ if (!function_exists('http_response_code')) {
                 case 404: $text = 'Not Found'; break;
                 case 405: $text = 'Method Not Allowed'; break;
                 case 406: $text = 'Not Acceptable'; break;
-                case 407: $text = 'Proxy Authentication Required'; break;
+                case 407: $text = 'Proxy Auth Required'; break;
                 case 408: $text = 'Request Time-out'; break;
                 case 409: $text = 'Conflict'; break;
                 case 410: $text = 'Gone'; break;

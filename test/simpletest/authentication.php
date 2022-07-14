@@ -23,7 +23,7 @@ class SimpleRealm {
 
     /**
      *    Starts with the initial entry directory.
-     *    @param string $type      Authentication type for this
+     *    @param string $type      Auth type for this
      *                             realm. Only Basic authentication
      *                             is currently supported.
      *    @param SimpleUrl $url    Somewhere in realm.
@@ -157,7 +157,7 @@ class SimpleAuthenticator {
      *    the original standards committee and treats the
      *    base URL as the root of a file tree shaped realm.
      *    @param SimpleUrl $url    Base of realm.
-     *    @param string $type      Authentication type for this
+     *    @param string $type      Auth type for this
      *                             realm. Only Basic authentication
      *                             is currently supported.
      *    @param string $realm     Name of realm.

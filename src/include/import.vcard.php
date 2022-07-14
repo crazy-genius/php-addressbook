@@ -41,7 +41,7 @@ class ImportVCards  {
   	
     $res = array();
     
-    // Apple Addressbook preprocessing
+    // Apple AddressBook preprocessing
 	  // - Remove "itemX." prefixes
 	  $vcards_line = preg_replace('/^item\d+\./', '', $vcards_line);
 	  

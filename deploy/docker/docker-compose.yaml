@@ -1,0 +1,32 @@
+version: "3.9"
+
+services:
+  nginx:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ../..:/var/www/html
+    links:
+      - php-fpm
+  php-fpm:
+    build:
+        context: ./php
+        dockerfile: Dockerfile
+    volumes:
+        - ../..:/var/www/html
+    expose:
+      - 9000
+    links:
+      - mysql
+  db:
+    image: mysql:8.0-debian
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - ./db/data:/var/lib/mysql
+      - ./db/addressbook.sql:/docker-entrypoint-initdb.d/addressbook.sql
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "addressbook"
+      MYSQL_USER: "addressbook_user"
+      MYSQL_PASSWORD: "addressbook_user_password"

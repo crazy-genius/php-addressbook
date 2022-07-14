@@ -328,7 +328,7 @@ class SimpleFrameset {
     }
 
     /**
-     *    Accessor for last Authentication type. Only valid
+     *    Accessor for last Auth type. Only valid
      *    straight after a challenge (401).
      *    @return string    Description of challenge type.
      *    @access public
@@ -341,7 +341,7 @@ class SimpleFrameset {
     }
 
     /**
-     *    Accessor for last Authentication realm. Only valid
+     *    Accessor for last Auth realm. Only valid
      *    straight after a challenge (401).
      *    @return string    Name of security realm.
      *    @access public

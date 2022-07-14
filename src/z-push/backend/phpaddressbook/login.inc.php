@@ -246,7 +246,7 @@ class AuthLoginIP extends AuthLoginImpl {
 
 abstract class AuthLoginUserPass extends AuthLoginImpl {
 
-  // Authentication stuff
+  // Auth stuff
   private $ip_date;
   private $uin;
   protected $username;

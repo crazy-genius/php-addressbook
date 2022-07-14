@@ -1229,7 +1229,7 @@ define('PR_INTERNET_MESSAGE_ID'                       ,mapi_prop_tag(PT_STRING8,
 define('PR_ATTR_HIDDEN'                               ,mapi_prop_tag(PT_BOOLEAN,     0x10F4));
 
 /**
- * Addressbook detail properties.
+ * AddressBook detail properties.
  * It is not defined by MAPI, but to keep in sync with the interface of outlook we have to use these
  * properties. Outlook actually uses these properties for it's addressbook details.
  */
