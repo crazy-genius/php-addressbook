@@ -4,6 +4,7 @@
 
 global $projectRoot, $includes;
 
+use AddressBook\Address\Address;
 use AddressBook\Address\Addresses;
 use AddressBook\DBAL\Database;
 
@@ -117,15 +118,13 @@ if (isset($table_groups) and $table_groups != "" and !$is_fix_group) { ?>
         include_once $includes . DS . 'guess.inc.php';
 
 
-        function addRow($row)
+        function addRow($row, Address $addr)
         {
-
-            global $addr, $page_ext_qry, $url_images, $read_only, $map_guess, $full_phone, $homepage_guess;
-
+            global $page_ext_qry, $url_images, $read_only, $map_guess, $full_phone, $homepage_guess;
             $myrow = $addr->getData();
 
             foreach ($myrow as $mycol => $mycolval) {
-                ${$mycol} = $mycolval;
+                ${strtolower($mycol)} = $mycolval;
             }
 
             $email = $addr->firstEMail();
@@ -136,15 +135,7 @@ if (isset($table_groups) and $table_groups != "" and !$is_fix_group) { ?>
             }
 
             // Special value for short phone
-            $row = ($row == "telephone" ? "phone" : $row);
-
-            if ($row == "phone") {
-                if ($full_phone) {
-                    $phone = $addr->firstPhone();
-                } else {
-                    $phone = $addr->shortPhone();
-                }
-            }
+            $row = ($row === "telephone" ? "phone" : $row);
 
             switch ($row) {
                 case "select":
@@ -235,22 +226,17 @@ if (isset($table_groups) and $table_groups != "" and !$is_fix_group) { ?>
             }
         }
 
-        while ($addr = $addresses->nextAddress()) {
-
+        foreach ($addresses as $address) {
             $color = ($alternate++ % 2) ? "odd" : "";
             echo "<tr class='" . $color . "' name='entry'>";
 
             if ($is_mobile) {
-                // addRow("select");
-                addRow("lastname");
-                addRow("firstname");
-                // addRow("first_last");
-                // addRow("all_phones");
-                // addRow("email");
-                addRow("edit");
+                addRow("lastname", $address);
+                addRow("firstname", $address);
+                addRow("edit", $address);
             } else {
                 foreach ($disp_cols as $col) {
-                    addRow($col);
+                    addRow($col, $address);
                 }
             }
 

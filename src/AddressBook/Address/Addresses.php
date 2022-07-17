@@ -6,9 +6,11 @@ namespace AddressBook\Address;
 
 use AddressBook\DBAL\Database;
 
-class Addresses
+class Addresses implements \Iterator
 {
-    private $result;
+    private int $count = 0;
+    private int $position = 0;
+    private array $result = [];
 
     public static function withSearchString($searchstring, $alphabet = ""): Addresses
     {
@@ -67,13 +69,13 @@ class Addresses
         if ($pagesize > 0) {
             $sql .= " LIMIT " . ($page - 1) * $pagesize . "," . $pagesize;
         }
-        //*/
-        $this->result = $dbal->query($sql);
+        $this->result = (array)$dbal->query($sql);
+        $this->count = count($this->result);
+        $this->position = 0;
     }
 
     function likePhone($row, $searchword)
     {
-        $dbal = Database::getInstance();
         global $phone_delims;
 
         $replace = $row;
@@ -82,7 +84,7 @@ class Addresses
             $replace = "replace(" . $replace . ", '" . Database::reaEscapeString($phone_delim) . "','')";
             $like = "replace(" . $like . ", '" . Database::reaEscapeString($phone_delim) . "','')";
         }
-        return $replace . " LIKE CONCAT('%'," . $like . ",'%')";
+        return $replace . " LIK1E CONCAT('%'," . $like . ",'%')";
     }
 
     public static function withID($id)
@@ -92,23 +94,33 @@ class Addresses
         return $instance;
     }
 
-    public function nextAddress()
+    public function key(): int
     {
-        $myrow = array_pop($this->result);
-        if ($myrow) {
-            return new Address(trimAll($myrow));
-        }
-
-        return false;
+        return $this->position;
     }
 
-    public function count(): int
+    public function rewind(): void
     {
-        return count($this->getResults());
+        $this->position = 0;
     }
 
-    public function getResults()
+    public function getResults(): array
     {
         return $this->result;
+    }
+
+    public function valid(): bool
+    {
+        return isset($this->result[$this->position]);
+    }
+
+    public function current(): Address
+    {
+        return new Address(trimAll($this->result[$this->position]));
+    }
+
+    public function next(): void
+    {
+        ++$this->position;
     }
 }

@@ -54,11 +54,11 @@ class Birthday {
             throw new Exception();
       }
     }
-    
+
     function toDate() {
     	return mktime(0, 0, 0, $this->month, $this->day, $this->year);
     }
-    
+
 
     public static function tryDelimDate($str, $delim) {
 
@@ -88,7 +88,7 @@ class Birthday {
     function setMonth($month) {
 
   	  global $name_of_months;
-  	  
+
   	  $val = intval($month);
   	  if(1 <= $val && $val <= 12) {
   	    $this->month = $val;
@@ -115,28 +115,28 @@ class Birthday {
 
     function setDate($val0, $val1 = "", $val2 = "") {
 
-    	if($val0 != "" && $val1 != "" && $val2 != "") {    		
+    	if($val0 != "" && $val1 != "" && $val2 != "") {
     		$this->setDay  ($val0);
     		$this->setMonth($val1);
-    		$this->setYear ($val2);    		
+    		$this->setYear ($val2);
     	}
-    	
+
     	if(is_array($val0)) {
     		$this->prefix = $val1;
     		$this->setDay(   $val0[$this->prefix.'day']);
     		$this->setMonth( $val0[$this->prefix.'month']);
     		$this->setYear(  $val0[$this->prefix.'year']);
-    		
+
     		return true;
     	}
 
-    	if(   is_int($val0) && $val0 > 0 
+    	if(   is_int($val0) && $val0 > 0
     	   && $val1 == "" && $val2 == "") {
-    	   	
+
     		$this->setDay(date("d", $val0));
     		$this->setMonth(date("m", $val0));
     		$this->setYear(date("Y", $val0));
-    		
+
     		return true;
     	}
     	    	//
@@ -147,21 +147,21 @@ class Birthday {
     		$this->setDay  ($parse_date[3]);
     		$this->setMonth($parse_date[2]);
     		$this->setYear ($parse_date[1]);
-    		
+
     		return true;
     	}
     }
 
     function setPrefix($prefix) {
-    	 
+
     	 $this->prefix = $prefix;
     	 return $this;
     }
-     
+
     function addToAddr($addr) {
- 
+
     	 global $name_of_months;
-    	 
+
     	 if($this->day   != -1) {
     	   $addr[$this->prefix."day"] = $this->day;
     	 }
@@ -173,11 +173,11 @@ class Birthday {
     	 if($this->year != -1) {
          $addr[$this->prefix."year"]  = $this->year;
        }
-       
+
        return $addr;
 
     }
-    
+
     function getAge($future_offset = 0) {
 
       $age =  date("Y", $this->today)  - $this->year;
@@ -191,4 +191,3 @@ class Birthday {
     }
 
 }
-?>

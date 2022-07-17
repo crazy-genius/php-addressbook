@@ -20,21 +20,8 @@ foreach($cookie_names as $cookie_name) {
 // Get preference
 //
 function getPref($key) {
-	
-	global $username, $userlist
-	     , $cookie_prefix, $_POST, $_GET, $_COOKIE;
-	
-	if(isset($_POST[$key])) {
-		return $_POST[$key];
-	} elseif(isset($_GET[$key])) {
-		return $_GET[$key];
-	} elseif(isset($_COOKIE[$cookie_prefix.$key])) {
-		return $_COOKIE[$cookie_prefix.$key];		
-	} elseif(isset($userlist[$username][$key])) {
-		return $userlist[$username][$key];
-	} else {
-		return "";
-	}
-}
 
-?>
+	global $username, $userlist, $cookie_prefix, $_POST, $_GET, $_COOKIE;
+
+    return $_POST[$key] ?? $_GET[$key] ?? $_COOKIE[$cookie_prefix . $key] ?? $userlist[$username][$key] ?? "";
+}

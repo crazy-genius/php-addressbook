@@ -78,6 +78,20 @@ final class Database
         return $stm->executeQuery($parameters)->fetchAllAssociative();
     }
 
+    /**
+     * @throws \Doctrine\DBAL\Exception
+     */
+    public function execute(string $sql, array $parameters = []): void
+    {
+        if ($this->connection->isConnected() === false) {
+            throw new \RuntimeException('Database connection has been lost');
+        }
+
+        $stm = $this->connection->prepare($sql);
+
+        $stm->executeQuery($parameters);
+    }
+
     private function __construct()
     {
     }

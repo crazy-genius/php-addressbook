@@ -78,6 +78,9 @@ function addHomepage($homepage)
     return "";
 }
 
+/**
+ * @throws Exception
+ */
 function addBirthday($bday, $bmonth, $byear, $prefix)
 {
 

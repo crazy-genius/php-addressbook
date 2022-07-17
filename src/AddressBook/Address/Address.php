@@ -6,7 +6,6 @@ namespace AddressBook\Address;
 
 class Address
 {
-
     private $address; // mother of all data
 
     private $phones;

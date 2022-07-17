@@ -1,20 +1,13 @@
 <?php
 
-function saveGroup($group_name, $group_header = "", $group_footer = "") {
+use AddressBook\DBAL\Database;
 
-  global $domain_id, $table_groups;
+function saveGroup($group_name, $group_header = "", $group_footer = ""): void
+{
+    $dbal = Database::getInstance();
+    global $domain_id, $table_groups;
 
-  $sql = "INSERT INTO $table_groups (domain_id,    group_name,   group_header,    group_footer) 
+    $sql = "INSERT INTO $table_groups (domain_id,    group_name,   group_header,    group_footer) 
                              VALUES ('$domain_id', '$group_name','$group_header', '$group_footer')";
-  $result = $dbal->query($sql);
-
+    $dbal->execute($sql);
 }
-
-class Group {
-
-    function __construct($data) {
-    	$this->group = $data;
-    }
-
-}
-?>

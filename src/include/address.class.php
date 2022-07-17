@@ -1,35 +1,37 @@
 <?php
 
+use AddressBook\Address\Addresses;
 use AddressBook\DBAL\Database;
 
 require_once "translations.inc.php";
 include "phone.intl_prefixes.php";
 include "birthday.class.php";
 
-function getIfSetFromAddr($addr_array, $key)
+function getIfSetFromArray(array $array, string|int $key): string
 {
-    return $addr_array[$key] ?? "";
+    return (string)($array[$key] ?? "");
 }
 
-function trimAll($r): array
+function trimAll(array $array): array
 {
-    $res = [];
-    foreach ($r as $key => $val) {
-        $res[$key] = trim($val);
-    }
-    return $res;
+    return \array_map(static function (mixed $value) {
+        if (is_array($value)) {
+            return trimAll($value);
+        }
+
+        return is_string($value) ? trim($value) : $value;
+    }, $array);
 }
 
-function echoIfSet($addr_array, $key): void
+function echoIfSet(array $array, string|int $key): void
 {
-    echo getIfSetFromAddr($addr_array, $key);
+    echo getIfSetFromArray($array, $key);
 }
-
 
 function deleteAddresses($part_sql): bool
 {
     $dbal = Database::getInstance();
-    global $keep_history, $domain_id, $base_from_where, $table, $table_grp_adr, $table_groups;
+    global $keep_history, $domain_id, $base_from_where, $table, $table_grp_adr;
 
     $sql = "SELECT * FROM $base_from_where AND " . $part_sql;
     $result = $dbal->query($sql);
@@ -63,48 +65,46 @@ function saveAddress($addr_array, $group_name = "")
     global $domain_id, $table, $table_grp_adr, $table_groups, $month_lookup, $base_from_where;
 
     if (isset($addr_array['id'])) {
-        $set_id = "'" . $addr_array['id'] . "'";
         $src_tbl = $month_lookup . " WHERE bmonth_num = 1";
     } else {
-        $set_id = "ifnull(max(id),0)+1"; // '0' is a bad ID
         $src_tbl = $table;
     }
 
-    $sql = "INSERT INTO $table ( domain_id, id, firstname, middlename, lastname, nickname, company, title, address, home, mobile, work, fax, email, email2, email3, homepage, aday, amonth, ayear, bday, bmonth, byear, address2, phone2, photo, notes, created, modified)
-                        SELECT   $domain_id                                        domain_id
-                               , " . $set_id . "                                       id
-                               , '" . getIfSetFromAddr($addr_array, 'firstname') . "'  firstname
-                               , '" . getIfSetFromAddr($addr_array, 'middlename') . "' lastname
-                               , '" . getIfSetFromAddr($addr_array, 'lastname') . "'   lastname
-                               , '" . getIfSetFromAddr($addr_array, 'nickname') . "'   nickname
-                               , '" . getIfSetFromAddr($addr_array, 'company') . "'    company
-                               , '" . getIfSetFromAddr($addr_array, 'title') . "'      title
-                               , '" . getIfSetFromAddr($addr_array, 'address') . "'    address
-                               , '" . getIfSetFromAddr($addr_array, 'home') . "'       home
-                               , '" . getIfSetFromAddr($addr_array, 'mobile') . "'     mobile
-                               , '" . getIfSetFromAddr($addr_array, 'work') . "'       work
-                               , '" . getIfSetFromAddr($addr_array, 'fax') . "'        fax
-                               , '" . getIfSetFromAddr($addr_array, 'email') . "'      email
-                               , '" . getIfSetFromAddr($addr_array, 'email2') . "'     email2
-                               , '" . getIfSetFromAddr($addr_array, 'email3') . "'     email3
-                               , '" . getIfSetFromAddr($addr_array, 'homepage') . "'   homepage
-                               , '" . getIfSetFromAddr($addr_array, 'aday') . "'       aday
-                               , '" . getIfSetFromAddr($addr_array, 'amonth') . "'     amonth
-                               , '" . getIfSetFromAddr($addr_array, 'ayear') . "'      ayear
-                               , '" . getIfSetFromAddr($addr_array, 'bday') . "'       bday
-                               , '" . getIfSetFromAddr($addr_array, 'bmonth') . "'     bmonth
-                               , '" . getIfSetFromAddr($addr_array, 'byear') . "'      byear
-                               , '" . getIfSetFromAddr($addr_array, 'address2') . "'   address2
-                               , '" . getIfSetFromAddr($addr_array, 'phone2') . "'     phone2
-                               , '" . getIfSetFromAddr($addr_array, 'photo') . "'      photo
-                               , '" . getIfSetFromAddr($addr_array, 'notes') . "'      notes
-                               , now(), now()
-                            FROM " . $src_tbl;
-    $result = $dbal->query($sql);
+    $insertQuery = $dbal->queryBuilder();
+    $insertQuery
+        ->insert($table)
+        ->values([
+            'domain_id' => (int)$domain_id,
+            'firstname' => '\'' . getIfSetFromArray($addr_array, 'firstname') . '\'',
+            'middlename' => '\'' . getIfSetFromArray($addr_array, 'middlename') . '\'',
+            'lastname' => '\'' . getIfSetFromArray($addr_array, 'lastname') . '\'',
+            'nickname' => '\'' . getIfSetFromArray($addr_array, 'nickname') . '\'',
+            'company' => '\'' . getIfSetFromArray($addr_array, 'company') . '\'',
+            'title' => '\'' . getIfSetFromArray($addr_array, 'title') . '\'',
+            'address' => '\'' . getIfSetFromArray($addr_array, 'address') . '\'',
+            'home' => '\'' . getIfSetFromArray($addr_array, 'home') . '\'',
+            'mobile' => '\'' . getIfSetFromArray($addr_array, 'mobile') . '\'',
+            'work' => '\'' . getIfSetFromArray($addr_array, 'work') . '\'',
+            'fax' => '\'' . getIfSetFromArray($addr_array, 'fax') . '\'',
+            'email' => '\'' . getIfSetFromArray($addr_array, 'email') . '\'',
+            'email2' => '\'' . getIfSetFromArray($addr_array, 'email2') . '\'',
+            'email3' => '\'' . getIfSetFromArray($addr_array, 'email3') . '\'',
+            'homepage' => '\'' . getIfSetFromArray($addr_array, 'homepage') . '\'',
+            'aday' => (int)getIfSetFromArray($addr_array, 'aday') ,
+            'amonth' => '\'' . getIfSetFromArray($addr_array, 'amonth') . '\'',
+            'ayear' => '\'' . getIfSetFromArray($addr_array, 'ayear') . '\'',
+            'bday' => (int)getIfSetFromArray($addr_array, 'bday'),
+            'bmonth' => '\'' . getIfSetFromArray($addr_array, 'bmonth') . '\'',
+            'byear' => '\'' . getIfSetFromArray($addr_array, 'byear') . '\'',
+            'address2' => '\'' . getIfSetFromArray($addr_array, 'address2') . '\'',
+            'phone2' => '\'' . getIfSetFromArray($addr_array, 'phone2') . '\'',
+            'photo' => '\'' . getIfSetFromArray($addr_array, 'photo') . '\'',
+            'notes' => '\'' . getIfSetFromArray($addr_array, 'notes') . '\'',
+            'created' => 'now()',
+            'modified' => 'now()',
+        ]);
 
-//    if (mysqli_errno() > 0) {
-//        echo "MySQL: " . mysqli_errno() . ": " . mysqli_error();
-//    }
+    $insertQuery->executeQuery();
 
     $sql = "SELECT max(id) max_id from $table";
     $result = $dbal->query($sql);
@@ -113,7 +113,7 @@ function saveAddress($addr_array, $group_name = "")
 
     if (!isset($addr_array['id']) && $group_name) {
         $sql = "INSERT INTO $table_grp_adr SELECT $domain_id domain_id, $id id, group_id, now(), now(), NULL FROM $table_groups WHERE group_name = '$group_name'";
-        $result = $dbal->query($sql);
+        $dbal->execute($sql);
     }
 
     return $id;
@@ -137,7 +137,7 @@ function updateAddress($addr, $keep_photo = true)
 
             // Get current photo, if "$keep_photo"
             if ($keep_photo) {
-                $r = $addresses->nextAddress()->getData();
+                $r = $addresses->current()?->getData() ?? [];
                 $addr['photo'] = $r['photo'];
             }
 
@@ -146,7 +146,7 @@ function updateAddress($addr, $keep_photo = true)
 		           WHERE deprecated is null
 		             AND id	       = '" . $addr['id'] . "'
 		             AND domain_id = '" . $domain_id . "';";
-            $result = $dbal->query($sql);
+            $dbal->execute($sql);
 
             saveAddress($addr);
         } else {
@@ -178,7 +178,7 @@ function updateAddress($addr, $keep_photo = true)
 	                            , modified  = now()
 		                        WHERE id        = '" . $addr['id'] . "'
 		                          AND domain_id = '$domain_id';";
-            $result = $dbal->query($sql);
+            $dbal->execute($sql);
         }
     }
 
