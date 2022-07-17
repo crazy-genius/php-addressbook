@@ -67,7 +67,7 @@ final class Database
     /**
      * @throws \Doctrine\DBAL\Exception
      */
-    public function query(string $sql, array $parameters = []): array
+    public function query(string $sql, array $parameters = []): iterable
     {
         if ($this->connection->isConnected() === false) {
             throw new \RuntimeException('Database connection has been lost');

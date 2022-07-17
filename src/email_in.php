@@ -4,46 +4,25 @@ include "include/configure.php";
 include "include/export.vcard.php";
 include "include/view.w.php";
 
-function strip_html_tags( $text )
+function br2nl($string)
 {
-    $result = preg_replace(
-        array(
-            '@<style[^>]*?>.*?</style>@siu',
-            '@<script[^>]*?>.*?</script>@siu'
-        ),
-        array(
-            ' ', ' '),
-        $text );
-
-    return $result;
-}
-function br2nl($string){
-	$result = $string;
-  $result = str_replace('<br>',   "\r\n", $result);
-  $result = str_replace('<br >',  "\r\n", $result);
-  $result = str_replace('<Br>',   "\r\n", $result);
-  $result = str_replace('<BR>',   "\r\n", $result);
-  $result = str_replace('<BR >',  "\r\n", $result);
-  $result = str_replace('<br/>',  "\r\n", $result);
-  $result = str_replace('<br />', "\r\n", $result);
-  return $result;
+    return str_replace(['<br>', '<br >', '<Br>', '<BR>', '<BR >', '<br/>', '<br />'], "\r\n", $string);
 }
 
-function flattenParts($messageParts, $flattenedParts = array(), $prefix = '', $index = 1, $fullPrefix = true) {
+function flattenParts($messageParts, $flattenedParts = [], $prefix = '', $index = 1, $fullPrefix = true)
+{
 
-    foreach($messageParts as $part) {
-        $flattenedParts[$prefix.$index] = $part;
-        if(isset($part->parts)) {
-            if($part->type == 2) {
-                $flattenedParts = flattenParts($part->parts, $flattenedParts, $prefix.$index.'.', 0, false);
-            }
-            elseif($fullPrefix) {
-                $flattenedParts = flattenParts($part->parts, $flattenedParts, $prefix.$index.'.');
-            }
-            else {
+    foreach ($messageParts as $part) {
+        $flattenedParts[$prefix . $index] = $part;
+        if (isset($part->parts)) {
+            if ($part->type == 2) {
+                $flattenedParts = flattenParts($part->parts, $flattenedParts, $prefix . $index . '.', 0, false);
+            } elseif ($fullPrefix) {
+                $flattenedParts = flattenParts($part->parts, $flattenedParts, $prefix . $index . '.');
+            } else {
                 $flattenedParts = flattenParts($part->parts, $flattenedParts, $prefix);
             }
-            unset($flattenedParts[$prefix.$index]->parts);
+            unset($flattenedParts[$prefix . $index]->parts);
         }
         $index++;
     }
@@ -51,21 +30,24 @@ function flattenParts($messageParts, $flattenedParts = array(), $prefix = '', $i
     return $flattenedParts;
 }
 
-function getPart($connection, $messageNumber, $partNumber, $encoding) {
+function getPart($connection, $messageNumber, $partNumber, $encoding)
+{
 
     $data = imap_fetchbody($connection, $messageNumber, $partNumber);
 
-    switch($encoding) {
-        case 3:  return base64_decode($data); // BASE64
-        case 4:  return imap_qprint($data);   // QUOTED_PRINTABLE
-        default: return $data;                // 0: 7BIT, 1: 8BIT, 2: BINARY, 5: OTHER
-    }
+    return match ($encoding) {
+        3 => base64_decode($data),
+        4 => imap_qprint($data),
+        default => $data,
+    };
 }
 
-$connection = imap_open ( $mail_box , $mail_user , $mail_pass, !OP_SECURE ) or die("Error: " . imap_last_error());
+$connection = imap_open($mail_box, $mail_user, $mail_pass, !OP_SECURE) or die("Error: " . imap_last_error());
 $MC = imap_check($connection);
 $messageNumber = $MC->Nmsgs;
-if($messageNumber == 0) die;
+if ($messageNumber == 0) {
+    die;
+}
 
 //
 // Check last mail
@@ -74,14 +56,13 @@ $hds = imap_headerinfo($connection, $messageNumber);
 echo nl2br(print_r($hds, true));
 
 // Check if mail is authorized
-$to  = $hds->from[0]->mailbox."@".$hds->from[0]->host;
-if(count($mail_accept) > 0 && !in_array($to, $mail_accept) {
+$to = $hds->from[0]->mailbox . "@" . $hds->from[0]->host;
+if (count($mail_accept) > 0 && !in_array($to, $mail_accept, true)) {
+    // delete without warning
+    imap_delete($connection, "$messageNumber");
 
-	// delete without warning
-	imap_delete ($connection, "$messageNumber");
-
-	// process next mail
-	die;
+// process next mail
+    die;
 }
 
 //
@@ -89,51 +70,51 @@ if(count($mail_accept) > 0 && !in_array($to, $mail_accept) {
 //
 $structure = imap_fetchstructure($connection, $messageNumber);
 
-if(isset($structure->parts)) {
-  $flattenedParts = flattenParts($structure->parts);
+if (isset($structure->parts)) {
+    $flattenedParts = flattenParts($structure->parts);
 } else {
-  $flattenedParts[1] = $structure;
+    $flattenedParts[1] = $structure;
 }
 
-foreach($flattenedParts as $partNumber => $part) {
+foreach ($flattenedParts as $partNumber => $part) {
 
-    switch($part->type) {
+    switch ($part->type) {
         case 0:
             $message = getPart($connection, $messageNumber, $partNumber, $part->encoding);
 
 
-            foreach($part->parameters as $parameter) {
-              if(strtoupper($parameter->attribute) == "CHARSET") {
-              	$charset = $parameter->value;
-            	echo "<br>$charset<br>";
-              	if(function_exists('mb_convert_encoding')) {
-              	  $message = mb_convert_encoding ($message, "UTF-8", strtoupper($charset));
-                } else {
-              	  $message = utf8_encode($message);
-              	}
-              }
+            foreach ($part->parameters as $parameter) {
+                if (strtoupper($parameter->attribute) === "CHARSET") {
+                    $charset = $parameter->value;
+                    echo "<br>$charset<br>";
+                    if (function_exists('mb_convert_encoding')) {
+                        $message = mb_convert_encoding($message, "UTF-8", strtoupper($charset));
+                    } else {
+                        $message = utf8_encode($message);
+                    }
+                }
             }
 
-            if($part->subtype == "HTML") {
-              $message = br2nl($message);
-              // ToDo: strip "<style>" section
-              // ToDo: strip "<javascript>" section
-              $message = strip_tags($message);
-              $message = html_entity_decode($message, ENT_COMPAT, "UTF-8");
+            if ($part->subtype === "HTML") {
+                $message = br2nl($message);
+                // ToDo: strip "<style>" section
+                // ToDo: strip "<javascript>" section
+                $message = strip_tags($message);
+                $message = html_entity_decode($message, ENT_COMPAT, "UTF-8");
             }
 
-        break;
+            break;
         case 1: # multi-part headers,       ignore
         case 2: # attached message headers, ignore
         case 3: # application,              ignore
         case 4: # audio
         case 5: # image
         case 6: # video
-        break;
+            break;
         case 7: # other
             // $filename = getFilenameFromPart($part);
             $filename = "";
-            if($filename) { # it's an attachment
+            if ($filename) { # it's an attachment
 
                 $attachment = getPart($connection, $messageNumber, $partNumber, $part->encoding);
                 // now do something with the attachment, e.g. save it somewhere
@@ -141,15 +122,11 @@ foreach($flattenedParts as $partNumber => $part) {
                 # It's a vcard
                 // ...
             }
-            else { # don't know what it is, ignore it!
-            }
-        break;
+            break;
     }
 }
 
-$addr  = guessAddressFields($message);
-
-// saveAddress($addr);
+$addr = guessAddressFields($message);
 
 // Generate vCard
 $vcard = address2vcard($addr);
@@ -162,32 +139,31 @@ $mail_text = ob_get_clean();
 
 
 //------------------ Sending the e-Mail
-$subject = "vCard for: ".$addr['firstname'].(isset($addr['middlename']) ? " ".$addr['middlename']:"")." ".$addr['lastname'].(isset($addr['company']) ? " (".$addr['company'].")":"");
+$subject = "vCard for: " . $addr['firstname'] . (isset($addr['middlename']) ? " " . $addr['middlename'] : "") . " " . $addr['lastname'] . (isset($addr['company']) ? " (" . $addr['company'] . ")" : "");
 $boundary = md5(date('r', time()));
 
 // Define Headers we want passed:
 // *  Note that they are separated with \r\n
-$headers  = "From: ".$mail_user."\r\nReply-To: ".$mail_user;
-$headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-".$boundary."\"";
+$headers = "From: " . $mail_user . "\r\nReply-To: " . $mail_user;
+$headers .= "\r\nContent-Type: multipart/mixed; boundary=\"PHP-mixed-" . $boundary . "\"";
 
-$body  = "--PHP-mixed-".$boundary."\r\n";
+$body = "--PHP-mixed-" . $boundary . "\r\n";
 $body .= "Content-Type: text/html; charset=\"utf-8\"";
 $body .= "\r\nContent-Transfer-Encoding: 8bit";
 $body .= "\r\n\r\n";
 $body .= $mail_text;
 $body .= "\r\n\r\n";
-$body .= "--PHP-mixed-".$boundary."\r\n";
+$body .= "--PHP-mixed-" . $boundary . "\r\n";
 $body .= implode("\r\n", headers2vcard($addr));
 $body .= "\r\n\r\n";
 $body .= $vcard;
-$body .= "--PHP-mixed-".$boundary."\r\n";
+$body .= "--PHP-mixed-" . $boundary . "\r\n";
 
-$mail_sent = mail( $to, $subject, $body, $headers );
+$mail_sent = mail($to, $subject, $body, $headers);
 
-if(imap_mail_move($connection, "$messageNumber", "INBOX.Processed")) {
+if (imap_mail_move($connection, "$messageNumber", "INBOX.Processed")) {
 
-	echo "Mail moved ".$to;
+    echo "Mail moved " . $to;
 }
 imap_expunge($connection);
 
-?>

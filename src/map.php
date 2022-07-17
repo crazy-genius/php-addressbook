@@ -1,5 +1,8 @@
 <?php
-	include("include/configure.php");
+
+use AddressBook\Address\Addresses;
+
+include("include/configure.php");
 	include ("include/format.inc.php");
 ?>
 <title><?php echo ucfmsg("ADDRESS_BOOK").($group_name != "" ? " ($group_name)":""); ?></title>

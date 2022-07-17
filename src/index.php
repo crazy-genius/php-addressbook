@@ -4,6 +4,7 @@
 
 global $projectRoot, $includes;
 
+use AddressBook\Address\Addresses;
 use AddressBook\DBAL\Database;
 
 include_once $includes . DS . 'configure.php';
@@ -70,7 +71,7 @@ if (isset($table_groups) and $table_groups != "" and !$is_fix_group) { ?>
             <?php
             $sql = "SELECT group_name FROM $groups_from_where ORDER BY lower(group_name) ASC";
             $result_groups = $dbal->query($sql);
-            
+
             $result_gropup_snumber = count($result_groups);
 
             foreach ($result_groups as $myrow) {
