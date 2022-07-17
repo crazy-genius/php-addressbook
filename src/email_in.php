@@ -1,4 +1,4 @@
-<?phpko
+<?php
 
 include "include/configure.php";
 include "include/export.vcard.php";

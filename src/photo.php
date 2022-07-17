@@ -6,9 +6,9 @@ if ($id) {
 
    $sql = "SELECT photo FROM $base_from_where AND $table.id='$id'";
    $result = mysql_query($sql, $db);
-   $r = mysqli_fetch_array($result);
+   $r = $result[0]??[];;
 
-   $resultsnumber = mysqli_num_rows($result);
+   $resultsnumber = count($result);
 }
 
 $encoded = $r['photo'];

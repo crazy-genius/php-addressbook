@@ -7,7 +7,7 @@ if ($id) {
    $sql = "SELECT * FROM $month_from_where AND $table.id=$id";
 
    $result = mysql_query($sql, $db);
-   $links  = mysqli_fetch_array($result);
+   $links  = $result[0]??[];;
 
    require "include/export.vcard.php";
 

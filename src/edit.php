@@ -4,6 +4,8 @@ include("include/configure.php");
 include("include/format.inc.php");
 include("include/photo.class.php");
 
+$dbal = \AddressBook\DBAL\Database::getInstance();
+
 if ($submit || $update) { ?>
     <meta HTTP-EQUIV="REFRESH" content="3;url=.">
 <?php }
@@ -12,10 +14,11 @@ $resultsnumber = 0;
 if ($id) {
 
     $sql = "SELECT * FROM $base_from_where AND $table.id='$id'";
-    $result = mysqli_query($db, $sq);
-    $r = mysqli_fetch_array($result);
 
-    $resultsnumber = mysqli_numrows($result);
+    $result = $dbal->query($sql);
+    $r = $result[0] ?? [];
+
+    $resultsnumber = count($result);
 }
 
 if (($resultsnumber == 0 && !isset($all)) || (!$id && !isset($all))) {
@@ -32,7 +35,7 @@ if (($resultsnumber == 0 && !isset($all)) || (!$id && !isset($all))) {
     }
 }
 ?>
-    <h1><?php echo ucfmsg('EDIT_ADD_ENTRY'); ?></h1>
+<h1><?php echo ucfmsg('EDIT_ADD_ENTRY'); ?></h1>
 <?php
 if ($submit) {
 
@@ -63,30 +66,30 @@ if ($submit) {
             }
         }
 
-        $addr['firstname'] = $firstname;
-        $addr['middlename'] = $middlename;
-        $addr['lastname'] = $lastname;
-        $addr['nickname'] = $nickname;
-        $addr['title'] = $title;
-        $addr['company'] = $company;
-        $addr['address'] = $address;
-        $addr['home'] = $home;
-        $addr['mobile'] = $mobile;
-        $addr['work'] = $work;
-        $addr['fax'] = $fax;
-        $addr['email'] = $email;
-        $addr['email2'] = $email2;
-        $addr['email3'] = $email3;
-        $addr['homepage'] = $homepage;
-        $addr['bday'] = $bday;
-        $addr['bmonth'] = $bmonth;
-        $addr['byear'] = $byear;
-        $addr['aday'] = $aday;
-        $addr['amonth'] = $amonth;
-        $addr['ayear'] = $ayear;
-        $addr['address2'] = $address2;
-        $addr['phone2'] = $phone2;
-        $addr['notes'] = $notes;
+        $addr['firstname'] = $firstname ?? '';
+        $addr['middlename'] = $middlename ?? '';
+        $addr['lastname'] = $lastname ?? '';
+        $addr['nickname'] = $nickname ?? '';
+        $addr['title'] = $title ?? '';
+        $addr['company'] = $company ?? '';
+        $addr['address'] = $address ?? '';
+        $addr['home'] = $home ?? '';
+        $addr['mobile'] = $mobile ?? '';
+        $addr['work'] = $work ?? '';
+        $addr['fax'] = $fax ?? '';
+        $addr['email'] = $email ?? '';
+        $addr['email2'] = $email2 ?? '';
+        $addr['email3'] = $email3 ?? '';
+        $addr['homepage'] = $homepage ?? '';
+        $addr['bday'] = $bday ?? '';
+        $addr['bmonth'] = $bmonth ?? '';
+        $addr['byear'] = $byear ?? '';
+        $addr['aday'] = $aday ?? '';
+        $addr['amonth'] = $amonth ?? '';
+        $addr['ayear'] = $ayear ?? '';
+        $addr['address2'] = $address2 ?? '';
+        $addr['phone2'] = $phone2 ?? '';
+        $addr['notes'] = $notes ?? '';
 
         if (isset($_FILES["photo"]) && $_FILES["photo"]["error"] <= 0) {
 
@@ -170,8 +173,8 @@ if ($submit) {
         echo "<br /><div class='msgbox'>Editing is disabled.</div>\n";
 } elseif ($id) {
     if (!$read_only) {
-        $result = mysql_query("SELECT * FROM $base_from_where AND $table.id=$id", $db);
-        $myrow = mysqli_fetch_array($result);
+        $result = $dbal->query("SELECT * FROM $base_from_where AND $table.id=$id");
+        $myrow = $result[0] ?? [];
         ?>
 
         <form enctype="multipart/form-data"
@@ -672,7 +675,7 @@ if ($submit) {
                     <option value="[none]">[<?php echo msg("NONE"); ?>]</option>
                     <?php
                     $sql = "SELECT group_name FROM $groups_from_where ORDER BY lower(group_name) ASC";
-                    $result_groups = mysqli_query($db, $sql);
+                    $result_groups = $dbal->query($sql);
                     $result_gropup_snumber = mysqli_num_rows($result_groups);
 
                     while ($myrow_group = mysqli_fetch_array($result_groups)) {

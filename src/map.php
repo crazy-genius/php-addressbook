@@ -32,7 +32,7 @@
 
   //EDIT_ADD_ENTRY
   //  foreach($addresses as $address) {
-  while($myrow = mysqli_fetch_array($result)) {
+  foreach($result as $myrow) {
 
     $coord['addr']   = trim(str_replace("\n", ", ", trim($myrow['address'])),",");
     $coord['html']    = "<b>".$myrow['firstname'].(isset($myrow['middlename']) ? " ".$myrow['middlename'] : "")." ".$myrow['lastname']."</b><br>";
@@ -68,14 +68,14 @@
                   WHERE id        = '".$myrow['id']."'
                     AND domain_id = '$domain_id'
                     AND deprecated is null;";
-        $upd_result = mysqli_query($db, $sql);
+        $upd_result = $dbal->query($sql);
 		  } else {
         $sql = "UPDATE $table 
                    SET addr_status = '".$coord['status']."'
                   WHERE id        = '".$myrow['id']."'
                     AND domain_id = '$domain_id'
                     AND deprecated is null;";
-        $upd_result = mysqli_query($db, $sql);
+        $upd_result = $dbal->query($sql);
 		  }
 		}
 		$coords[] = $coord;

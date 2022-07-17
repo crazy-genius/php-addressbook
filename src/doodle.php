@@ -266,11 +266,11 @@ echo "Select your date";
                     $sql .= "AND (id = '" . implode("' OR id = '", $participants) . "')";
                     $sql .= "order by lastname";
 
-                    $result = mysqli_query($db, $sql);
-                    $resultsnumber = mysqli_num_rows($result);
+                    $result = $dbal->query($sql);
+                    $resultsnumber = count($result);
 
                     $rows = [];
-                    while ($myrow = mysqli_fetch_array($result)) {
+                    foreach ($result as $myrow) {
                         $rows[] = "<a href='view.php?id=" . $myrow['id']
                             . "' title='" . $myrow['firstname'] . " " . $myrow['lastname'] . "' target='details'>"
                             . $myrow['firstname'] //." ".$myrow['lastname']

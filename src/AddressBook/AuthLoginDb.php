@@ -21,8 +21,8 @@ class AuthLoginDb extends AuthLoginUserPass {
                 ." = '".mysqli_real_escape_string($db_conn, $uin)."'";
 
             $result = mysqli_query($db_conn, $sql);
-            $rec = mysqli_fetch_array($result);
-            $cnt = mysqli_num_rows($result);
+            $rec = $result[0]??[];;
+            $cnt = count($result);
         }
 
         //
@@ -40,8 +40,8 @@ class AuthLoginDb extends AuthLoginUserPass {
                 ." and md5_pass in ('".$md5_pass."','".$md5_pass_lower."');";
 
             $result = mysqli_query($db_conn, $sql);
-            $rec = mysqli_fetch_array($result);
-            $cnt = mysqli_num_rows($result);
+            $rec = $result[0]??[];;
+            $cnt = count($result);
         }
 
         if($cnt == 1) {

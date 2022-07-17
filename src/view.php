@@ -63,7 +63,7 @@ if ($id) {
     include "include/view.w.php";
 
     $sql = "SELECT * FROM $base_from_where order by lastname, firstname";
-    $result = mysqli_query($db, $sql);
+    $result = $dbal->query($sql);
 
     $cnt = 0;
     echo "<h1>" . ucfmsg('ADDRESS_BOOK') . ($group ? " " . msg('FOR') . " <i>$group</i></h1>" : "</h1>");
@@ -76,7 +76,7 @@ if ($id) {
 
         $addr_per_line = ($only_phones ? 4 : 3);
 
-        while ($r = mysqli_fetch_array($result)) {
+        foreach ($result[0]??[] as $r) {
             $r = trimAll($r);
             $address = new Address($r);
             if ($address->hasPhone() || !$only_phones) {

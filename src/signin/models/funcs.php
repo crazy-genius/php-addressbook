@@ -16,7 +16,7 @@ function getLanguageFiles()
 	return $languages;
 }
 
-//Retrieve a list of all .css files in models/site-templates 
+//Retrieve a list of all .css files in models/site-templates
 function getTemplateFiles()
 {
 	$directory = "models/site-templates/";
@@ -49,7 +49,7 @@ function destroySession($name)
 
 //Generate a unique code
 function getUniqueCode($length = "")
-{	
+{
 	$code = md5(uniqid(rand(), true));
 	if ($length != "") return substr($code, 0, $length);
 	else return $code;
@@ -82,7 +82,7 @@ function generateHash($plainText, $salt = null)
 	  {
 	  	$salt = substr($salt, 0, 25);
 	  }
-	  
+
 	  return $salt . sha1($salt . $plainText);
 	}
 }
@@ -137,7 +137,7 @@ function minMaxRange($min, $max, $what)
 //Replaces hooks with specified text
 function replaceDefaultHook($str)
 {
-	global $default_hooks,$default_replace;	
+	global $default_hooks,$default_replace;
 	return (str_replace($default_hooks,$default_replace,$str));
 }
 
@@ -182,7 +182,7 @@ function sanitize($str)
 
 //Delete a defined array of users
 function deleteUsers($users) {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$i = 0;
 	$stmt = $mysqli->prepare("DELETE FROM ".$db_table_prefix."users 
 		WHERE user_id = ?");
@@ -209,7 +209,7 @@ function displayNameExists($displayname)
 		WHERE
 		display_name = ?
 		LIMIT 1");
-	$stmt->bind_param("s", $displayname);	
+	$stmt->bind_param("s", $displayname);
 	$stmt->execute();
 	$stmt->store_result();
 	if ($stmt->num_rows > 0)
@@ -218,7 +218,7 @@ function displayNameExists($displayname)
 	}
 	else
 	{
-		return false;	
+		return false;
 	}
 	$stmt->close();
 }
@@ -232,7 +232,7 @@ function emailExists($email)
 		WHERE
 		email = ?
 		LIMIT 1");
-	$stmt->bind_param("s", $email);	
+	$stmt->bind_param("s", $email);
 	$stmt->execute();
 	$stmt->store_result();
 	if ($stmt->num_rows > 0)
@@ -241,7 +241,7 @@ function emailExists($email)
 	}
 	else
 	{
-		return false;	
+		return false;
 	}
 	$stmt->close();
 }
@@ -257,7 +257,7 @@ function emailUsernameLinked($email,$username)
 		email = ?
 		LIMIT 1
 		");
-	$stmt->bind_param("ss", $username, $email);	
+	$stmt->bind_param("ss", $username, $email);
 	$stmt->execute();
 	$stmt->store_result();
 	if ($stmt->num_rows > 0)
@@ -266,7 +266,7 @@ function emailUsernameLinked($email,$username)
 	}
 	else
 	{
-		return false;	
+		return false;
 	}
 	$stmt->close();
 }
@@ -274,7 +274,7 @@ function emailUsernameLinked($email,$username)
 //Retrieve information for all users
 function fetchAllUsers()
 {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$stmt = $mysqli->prepare("SELECT 
 		user_id id,
 		username user_name,
@@ -291,7 +291,7 @@ function fetchAllUsers()
 		FROM ".$db_table_prefix."users");
 	$stmt->execute();
 	$stmt->bind_result($id, $user, $display, $password, $email, $token, $activationRequest, $passwordRequest, $active, $title, $signUp, $signIn);
-	
+
 	while ($stmt->fetch()){
 		$row[] = array('id' => $id, 'user_name' => $user, 'display_name' => $display, 'password' => $password, 'email' => $email, 'activation_token' => $token, 'last_activation_request' => $activationRequest, 'lost_password_request' => $passwordRequest, 'active' => $active, 'title' => $title, 'sign_up_stamp' => $signUp, 'last_sign_in_stamp' => $signIn);
 	}
@@ -302,9 +302,9 @@ function fetchAllUsers()
 //Retrieve complete user information by username, token or ID
 function fetchUserDetails($username=NULL,$token=NULL, $id=NULL)
 {
-	global $mysqli,$db_table_prefix; 
-	if($username!=NULL) 
-	{  
+	global $mysqli,$db_table_prefix;
+	if($username!=NULL)
+	{
 		$stmt = $mysqli->prepare("SELECT 
 			user_id  id,
 			username user_name,
@@ -405,7 +405,7 @@ function isUserLoggedIn()
 		AND
 		active = 1
 		LIMIT 1");
-	$stmt->bind_param("is", $loggedInUser->user_id, $loggedInUser->hash_pw);	
+	$stmt->bind_param("is", $loggedInUser->user_id, $loggedInUser->hash_pw);
 	$stmt->execute();
 	$stmt->store_result();
 	if($loggedInUser == NULL)
@@ -421,7 +421,7 @@ function isUserLoggedIn()
 		else
 		{
 			destroySession("userCakeUser");
-			return false;	
+			return false;
 		}
 	}
 	$stmt->close();
@@ -438,7 +438,7 @@ function setUserActive($token)
 		LIMIT 1");
 	$stmt->bind_param("s", $token);
 	return $stmt->execute();
-	$stmt->close();	
+	$stmt->close();
 }
 
 //Change a user's display name
@@ -452,7 +452,7 @@ function updateDisplayName($id, $display)
 		LIMIT 1");
 	$stmt->bind_param("si", $display, $id);
 	return $stmt->execute();
-	$stmt->close();	
+	$stmt->close();
 }
 
 //Update a user's email
@@ -466,13 +466,13 @@ function updateEmail($id, $email)
 		user_id = ?");
 	$stmt->bind_param("si", $email, $id);
 	return $stmt->execute();
-	$stmt->close();	
+	$stmt->close();
 }
 
 //Input new activation token, and update the time of the most recent activation request
 function updateLastActivationRequest($new_activation_token,$username,$email)
 {
-	global $mysqli,$db_table_prefix; 	
+	global $mysqli,$db_table_prefix;
 	$stmt = $mysqli->prepare("UPDATE ".$db_table_prefix."users
 		SET activation_token = ?,
 		last_activation_request = ?
@@ -481,7 +481,7 @@ function updateLastActivationRequest($new_activation_token,$username,$email)
 		username = ?");
 	$stmt->bind_param("ssss", $new_activation_token, time(), $email, $username);
 	return $stmt->execute();
-	$stmt->close();	
+	$stmt->close();
 }
 
 //Generate a random password, and new token
@@ -496,7 +496,7 @@ function updatePasswordFromToken($pass,$token)
 		activation_token = ?");
 	$stmt->bind_param("sss", $pass, $new_activation_token, $token);
 	return $stmt->execute();
-	$stmt->close();	
+	$stmt->close();
 }
 
 //Update a user's title
@@ -510,7 +510,7 @@ function updateTitle($id, $title)
 		user_id = ?");
 	$stmt->bind_param("si", $title, $id);
 	return $stmt->execute();
-	$stmt->close();	
+	$stmt->close();
 }
 
 //Check if a user ID exists in the DB
@@ -522,7 +522,7 @@ function userIdExists($id)
 		WHERE
 		user_id = ?
 		LIMIT 1");
-	$stmt->bind_param("i", $id);	
+	$stmt->bind_param("i", $id);
 	$stmt->execute();
 	$stmt->store_result();
 	if ($stmt->num_rows > 0)
@@ -531,7 +531,7 @@ function userIdExists($id)
 	}
 	else
 	{
-		return false;	
+		return false;
 	}
 	$stmt->close();
 }
@@ -545,7 +545,7 @@ function usernameExists($username)
 		WHERE
 		username = ?
 		LIMIT 1");
-	$stmt->bind_param("s", $username);	
+	$stmt->bind_param("s", $username);
 	$stmt->execute();
 	$stmt->store_result();
 	if ($stmt->num_rows > 0)
@@ -554,7 +554,7 @@ function usernameExists($username)
 	}
 	else
 	{
-		return false;	
+		return false;
 	}
 	$stmt->close();
 }
@@ -563,8 +563,8 @@ function usernameExists($username)
 function validateActivationToken($token,$lostpass=NULL)
 {
 	global $mysqli,$db_table_prefix;
-	if($lostpass == NULL) 
-	{	
+	if($lostpass == NULL)
+	{
 		$stmt = $mysqli->prepare("SELECT active
 			FROM ".$db_table_prefix."users
 			WHERE active = 0
@@ -572,7 +572,7 @@ function validateActivationToken($token,$lostpass=NULL)
 			activation_token = ?
 			LIMIT 1");
 	}
-	else 
+	else
 	{
 		$stmt = $mysqli->prepare("SELECT active
 			FROM ".$db_table_prefix."users
@@ -592,7 +592,7 @@ function validateActivationToken($token,$lostpass=NULL)
 	}
 	else
 	{
-		return false;	
+		return false;
 	}
 	$stmt->close();
 }
@@ -602,7 +602,7 @@ function validateActivationToken($token,$lostpass=NULL)
 
 //Create a permission level in DB
 function createPermission($permission) {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$stmt = $mysqli->prepare("INSERT INTO ".$db_table_prefix."permissions (
 		name
 		)
@@ -616,7 +616,7 @@ function createPermission($permission) {
 
 //Delete a permission level from the DB
 function deletePermission($permission) {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$i = 0;
 	$stmt = $mysqli->prepare("DELETE FROM ".$db_table_prefix."permissions 
 		WHERE id = ?");
@@ -642,7 +642,7 @@ function deletePermission($permission) {
 //Retrieve information for all permission levels
 function fetchAllPermissions()
 {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$stmt = $mysqli->prepare("SELECT 
 		id,
 		name
@@ -659,7 +659,7 @@ function fetchAllPermissions()
 //Retrieve information for a single permission level
 function fetchPermissionDetails($id)
 {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$stmt = $mysqli->prepare("SELECT 
 		id,
 		name
@@ -686,17 +686,17 @@ function permissionIdExists($id)
 		WHERE
 		id = ?
 		LIMIT 1");
-	$stmt->bind_param("i", $id);	
+	$stmt->bind_param("i", $id);
 	$stmt->execute();
 	$stmt->store_result();
-	
+
 	if ($stmt->num_rows > 0)
 	{
 		return true;
 	}
 	else
 	{
-		return false;	
+		return false;
 	}
 	$stmt->close();
 }
@@ -710,7 +710,7 @@ function permissionNameExists($permission)
 		WHERE
 		name = ?
 		LIMIT 1");
-	$stmt->bind_param("s", $permission);	
+	$stmt->bind_param("s", $permission);
 	$stmt->execute();
 	$stmt->store_result();
 	if ($stmt->num_rows > 0)
@@ -719,7 +719,7 @@ function permissionNameExists($permission)
 	}
 	else
 	{
-		return false;	
+		return false;
 	}
 	$stmt->close();
 }
@@ -735,7 +735,7 @@ function updatePermissionName($id, $name)
 		LIMIT 1");
 	$stmt->bind_param("si", $name, $id);
 	return $stmt->execute();
-	$stmt->close();	
+	$stmt->close();
 }
 
 //Functions that interact mainly with .user_permission_matches table
@@ -743,7 +743,7 @@ function updatePermissionName($id, $name)
 
 //Match permission level(s) with user(s)
 function addPermission($permission, $user) {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$i = 0;
 	$stmt = $mysqli->prepare("INSERT INTO ".$db_table_prefix."user_permission_matches (
 		permission_id,
@@ -779,7 +779,7 @@ function addPermission($permission, $user) {
 //Retrieve information for all user/permission level matches
 function fetchAllMatches()
 {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$stmt = $mysqli->prepare("SELECT 
 		id,
 		user_id,
@@ -791,20 +791,20 @@ function fetchAllMatches()
 		$row[] = array('id' => $id, 'user_id' => $user, 'permission_id' => $permission);
 	}
 	$stmt->close();
-	return ($row);	
+	return ($row);
 }
 
 //Retrieve list of permission levels a user has
 function fetchUserPermissions($user_id)
 {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$stmt = $mysqli->prepare("SELECT
 		id,
 		permission_id
 		FROM ".$db_table_prefix."user_permission_matches
 		WHERE user_id = ?
 		");
-	$stmt->bind_param("i", $user_id);	
+	$stmt->bind_param("i", $user_id);
 	$stmt->execute();
 	$stmt->bind_result($id, $permission);
 	while ($stmt->fetch()){
@@ -819,12 +819,12 @@ function fetchUserPermissions($user_id)
 //Retrieve list of users who have a permission level
 function fetchPermissionUsers($permission_id)
 {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$stmt = $mysqli->prepare("SELECT id, user_id
 		FROM ".$db_table_prefix."user_permission_matches
 		WHERE permission_id = ?
 		");
-	$stmt->bind_param("i", $permission_id);	
+	$stmt->bind_param("i", $permission_id);
 	$stmt->execute();
 	$stmt->bind_result($id, $user);
 	while ($stmt->fetch()){
@@ -838,7 +838,7 @@ function fetchPermissionUsers($permission_id)
 
 //Unmatch permission level(s) from user(s)
 function removePermission($permission, $user) {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$i = 0;
 	$stmt = $mysqli->prepare("DELETE FROM ".$db_table_prefix."user_permission_matches 
 		WHERE permission_id = ?
@@ -866,14 +866,14 @@ function removePermission($permission, $user) {
 	return $i;
 }
 
-//Functions that interact mainly with .configuration table
+//Functions that interact mainly with .config table
 //------------------------------------------------------------------------------
 
-//Update configuration table
+//Update config table
 function updateConfig($id, $value)
 {
 	global $mysqli,$db_table_prefix;
-	$stmt = $mysqli->prepare("UPDATE ".$db_table_prefix."configuration
+	$stmt = $mysqli->prepare("UPDATE ".$db_table_prefix."config
 		SET 
 		value = ?
 		WHERE
@@ -882,7 +882,7 @@ function updateConfig($id, $value)
 		$stmt->bind_param("si", $value[$cfg], $cfg);
 		return $stmt->execute();
 	}
-	$stmt->close();	
+	$stmt->close();
 }
 
 //Functions that interact mainly with .pages table
@@ -890,7 +890,7 @@ function updateConfig($id, $value)
 
 //Add a page to the DB
 function createPages($pages) {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$stmt = $mysqli->prepare("INSERT INTO ".$db_table_prefix."pages (
 		page
 		)
@@ -906,7 +906,7 @@ function createPages($pages) {
 
 //Delete a page from the DB
 function deletePages($pages) {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$stmt = $mysqli->prepare("DELETE FROM ".$db_table_prefix."pages 
 		WHERE id = ?");
 	$stmt2 = $mysqli->prepare("DELETE FROM ".$db_table_prefix."permission_page_matches 
@@ -924,7 +924,7 @@ function deletePages($pages) {
 //Fetch information on all pages
 function fetchAllPages()
 {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$stmt = $mysqli->prepare("SELECT 
 		id,
 		page,
@@ -944,7 +944,7 @@ function fetchAllPages()
 //Fetch information for a specific page
 function fetchPageDetails($id)
 {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$stmt = $mysqli->prepare("SELECT 
 		id,
 		page,
@@ -972,16 +972,16 @@ function pageIdExists($id)
 		WHERE
 		id = ?
 		LIMIT 1");
-	$stmt->bind_param("i", $id);	
+	$stmt->bind_param("i", $id);
 	$stmt->execute();
-	$stmt->store_result();	
+	$stmt->store_result();
 	if ($stmt->num_rows > 0)
 	{
 		return true;
 	}
 	else
 	{
-		return false;	
+		return false;
 	}
 	$stmt->close();
 }
@@ -997,7 +997,7 @@ function updatePrivate($id, $private)
 		id = ?");
 	$stmt->bind_param("ii", $private, $id);
 	return $stmt->execute();
-	$stmt->close();	
+	$stmt->close();
 }
 
 //Functions that interact mainly with .permission_page_matches table
@@ -1005,7 +1005,7 @@ function updatePrivate($id, $private)
 
 //Match permission level(s) with page(s)
 function addPage($page, $permission) {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$i = 0;
 	$stmt = $mysqli->prepare("INSERT INTO ".$db_table_prefix."permission_page_matches (
 		permission_id,
@@ -1041,14 +1041,14 @@ function addPage($page, $permission) {
 //Retrieve list of permission levels that can access a page
 function fetchPagePermissions($page_id)
 {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$stmt = $mysqli->prepare("SELECT
 		id,
 		permission_id
 		FROM ".$db_table_prefix."permission_page_matches
 		WHERE page_id = ?
 		");
-	$stmt->bind_param("i", $page_id);	
+	$stmt->bind_param("i", $page_id);
 	$stmt->execute();
 	$stmt->bind_result($id, $permission);
 	while ($stmt->fetch()){
@@ -1063,14 +1063,14 @@ function fetchPagePermissions($page_id)
 //Retrieve list of pages that a permission level can access
 function fetchPermissionPages($permission_id)
 {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$stmt = $mysqli->prepare("SELECT
 		id,
 		page_id
 		FROM ".$db_table_prefix."permission_page_matches
 		WHERE permission_id = ?
 		");
-	$stmt->bind_param("i", $permission_id);	
+	$stmt->bind_param("i", $permission_id);
 	$stmt->execute();
 	$stmt->bind_result($id, $page);
 	while ($stmt->fetch()){
@@ -1084,7 +1084,7 @@ function fetchPermissionPages($permission_id)
 
 //Unmatched permission and page
 function removePage($page, $permission) {
-	global $mysqli,$db_table_prefix; 
+	global $mysqli,$db_table_prefix;
 	$i = 0;
 	$stmt = $mysqli->prepare("DELETE FROM ".$db_table_prefix."permission_page_matches 
 		WHERE page_id = ?
@@ -1140,10 +1140,10 @@ function securePage($uri){
 	}
 	//If page is public, allow access
 	elseif ($pageDetails['private'] == 0) {
-		return true;	
+		return true;
 	}
 	//If user is not logged in, deny access
-	elseif(!isUserLoggedIn()) 
+	elseif(!isUserLoggedIn())
 	{
 		header("Location: login.php");
 		return false;
@@ -1155,7 +1155,7 @@ function securePage($uri){
 			FROM ".$db_table_prefix."permission_page_matches
 			WHERE page_id = ?
 			");
-		$stmt->bind_param("i", $pageDetails['id']);	
+		$stmt->bind_param("i", $pageDetails['id']);
 		$stmt->execute();
 		$stmt->bind_result($permission);
 		while ($stmt->fetch()){
@@ -1163,12 +1163,12 @@ function securePage($uri){
 		}
 		$stmt->close();
 		//Check if user's permission levels allow access to page
-		if ($loggedInUser->checkPermission($pagePermissions)){ 
+		if ($loggedInUser->checkPermission($pagePermissions)){
 			return true;
 		}
 		else {
 			header("Location: account.php");
-			return false;	
+			return false;
 		}
 	}
 }

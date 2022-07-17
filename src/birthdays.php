@@ -2,7 +2,8 @@
 
 include("include/configure.php");
 
-global $db;
+
+$dbal = \AddressBook\DBAL\Database::getInstance();
 
 $use_ics = isset($_REQUEST['ics']);
 if ($use_ics) {
@@ -74,7 +75,7 @@ function Birthday2vCal($date, $age)
 
 $lastmonth = '';
 
-$sql = "
+$sql = <<<SQL
 SELECT DISTINCT $table.*, $month_lookup.* ,
 IF ($month_lookup.bmonth_num < MONTH( CURDATE( ) )
     OR $month_lookup.bmonth_num = MONTH( CURDATE( ) )
@@ -87,12 +88,13 @@ AND $table.bday < DAYOFMONTH( CURDATE( ) ) , $month_lookup.bmonth_num+12, $month
 )*32+bday prio
 FROM $month_lookup,
 $base_from_where AND $table.bmonth = $month_lookup.bmonth AND $table.bday > 0
-ORDER BY prio ASC;";
+ORDER BY prio ASC
+SQL;
 
-$result = mysqli_query($db, $sql);
-$resultsnumber = mysqli_num_rows($result);
+$result = $dbal->query($sql);
+$resultsnumber = count($result);
 
-while ($myrow = mysqli_fetch_array($result)) {
+foreach ($result as $myrow) {
     $firstname = $myrow["firstname"];
     $id = $myrow["id"];
     $lastname = $myrow["lastname"];

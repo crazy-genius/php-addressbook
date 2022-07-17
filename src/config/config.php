@@ -7,7 +7,7 @@
   include dirname(__FILE__).DIRECTORY_SEPARATOR."cfg.mail.php";
   include dirname(__FILE__).DIRECTORY_SEPARATOR."cfg.guess.php";
 
-  // Page access configuration
+  // Page access config
   $page_ext   = ".php";
 
   //

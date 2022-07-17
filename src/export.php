@@ -13,7 +13,7 @@ if (isset($_REQUEST['type']) && $_REQUEST['type'] == "vCard-zip") {
     $zip = new ZipArchive();
     $filename = tempnam("/tmp", "pdd") . ".zip";
 
-    if ($zip->open($filename, ZIPARCHIVE::CREATE) !== true) {
+    if ($zip->open($filename, ZipArchive::CREATE) !== true) {
         exit("cannot open <$filename>\n");
     }
 
@@ -21,8 +21,8 @@ if (isset($_REQUEST['type']) && $_REQUEST['type'] == "vCard-zip") {
     if (isset($part_sql)) {
         $sql .= " AND " . $part_sql;
     }
-    $result = mysqli_query($db, $sql);
-    while ($address = mysqli_fetch_array($result)) {
+    $result = $dbal->query($sql);
+    foreach ($result as $address) {
         $vcfname = $address['firstname'] . (isset($address['middlename']) ? "_" . $address['middlename'] : "") . "_" . $address['lastname'] . "-" . $address['id'] . ".vcf";
         $vcfname = str_replace(" ", "_", $vcfname);  // middlename may contain spaces, for example "van der" in Dutch
         setlocale(LC_ALL, 'en_US.UTF8');

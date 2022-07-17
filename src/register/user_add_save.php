@@ -12,8 +12,8 @@ $username = strip_tags(substr($_POST['email'], 0, 32));
 if (trim($username) !== '' || strlen(trim($username)) >= 4) {
     //email unique?
     $sql = "SELECT * FROM " . $usertable . " WHERE username='$username'";
-    $result = mysqli_query($db, $sql);
-    $count = mysqli_num_rows($result);
+    $result = $dbal->query($sql);
+    $count = count($result);
     if ($count > 0) {
         $username_already_in_use = 104;
     }
@@ -31,7 +31,7 @@ if (preg_match('/^[_a-z0-9-]+(\.[_a-z0-9-]+)*@([a-z0-9-]{2,3})+(\.[a-z0-9-]+)*(\
 
 if ($require_email_unique) {
     $sql = "SELECT * FROM " . $usertable . " WHERE email='$email'";
-    $result = mysqli_query($db, $sql);
+    $result = $dbal->query($sql);
     $count = mysql_num_rows($result);
     if ($count > 0) {
         $email_already_in_use = 104;
@@ -94,8 +94,8 @@ if ($results) {
 }
 //email unique?
 $sql = "SELECT * FROM " . $usertable . "";
-$result = mysqli_query($db, $sql);
-$count = mysqli_num_rows($result);
+$result = $dbal->query($sql);
+$count = count($result);
 if ($count == 1) {
 
     $query = "UPDATE `users` SET `permissions`='5' WHERE `email`='$email'";

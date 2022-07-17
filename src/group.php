@@ -17,7 +17,7 @@ if ($read_only) {
     if ($submit) {
         $sql = "INSERT INTO $table_groups (domain_id, group_name, group_header, group_footer,  group_parent_id)
 		                           VALUES ('$domain_id', '$group_name','$group_header','$group_footer','$group_parent_id')";
-        $result = mysqli_query($db, $sql);
+        $result = $dbal->query($sql);
 
         echo "<br /><div class='msgbox'>A new group has been entered into the address book.<br /><i>return to the <a href='group$page_ext'>group page</a></i></div>";
 
@@ -36,12 +36,12 @@ if ($read_only) {
   		        FROM $groups_from_where
   		      ORDER BY lower(group_name) ASC;";
 
-                $result_groups = mysqli_query($db, $sql);
-                $result_gropup_snumber = mysqli_num_rows($result_groups);
+                $result_groups = $dbal->query($sql);
+                $result_gropup_snumber = count($result_groups);
 
                 //	has parent row in list been found?
                 $parent_found = false;
-                while ($myrow2 = mysqli_fetch_array($result_groups)) {
+                foreach ($result_groups as $myrow2) {
                     echo "<option value=\"" . $myrow2['group_id'] . "\">" . $myrow2["group_name"] . "</option>\n";
                 }
                 ?>
@@ -62,20 +62,20 @@ if ($read_only) {
         foreach ($selected as $group_id) {
             // Delete links between addresses and groups
             $sql = "delete from $table_grp_adr where domain_id = $domain_id AND group_id = $group_id";
-            $result = mysqli_query($db, $sql);
+            $result = $dbal->query($sql);
 
             // Delete groups
             $sql = "delete from $groups_from_where AND group_id = $group_id";
-            $result = mysqli_query($db, $sql);
+            $result = $dbal->query($sql);
         }
         echo "<div class='msgbox'>Group has been removed.<br /><i>return to the <a href='group$page_ext'>group page</a></i></div>";
     } elseif ($add) {
         // Lookup for the group_id
         $sql = "select * from $groups_from_where AND group_name = '$to_group'";
 
-        $result = mysqli_query($db, $sql);
+        $result = $dbal->query($sql);
 
-        $myrow = mysqli_fetch_array($result);
+        $myrow = $result[0] ?? [];
         $group_id = $myrow["group_id"];
         $group_name = $myrow["group_name"];
 
@@ -85,7 +85,8 @@ if ($read_only) {
 
                 $sql = "insert into $table_grp_adr (domain_id, id, group_id, created, modified) 
 		                              values ($domain_id, $user_id, $group_id, now(), now())";
-                $result = mysqli_query($db, $sql);
+
+                $result = $dbal->query($sql);
             }
             echo "<div class='msgbox'>Users added.<br /><i>Go to <a href='./?group=$group_name'>group page \"$group_name\"</a>.</i></div>";
         } else {
@@ -96,10 +97,11 @@ if ($read_only) {
         // Lookup for the group_id
         $sql = "select * from $table_groups where group_name = '$group'";
 
-        $result = mysqli_query($db, $sql);
-        // $resultsnumber = mysqli_num_rows($result);
 
-        $myrow = mysqli_fetch_array($result);
+        $result = $dbal->query($sql);
+        // $resultsnumber = count($result);
+
+        $myrow = $result[0] ?? [];
         $group_id = $myrow["group_id"];
         $group_name = $myrow["group_name"];
 
@@ -107,7 +109,7 @@ if ($read_only) {
         foreach ($selected as $user_id) {
 
             $sql = "delete from $table_grp_adr where id = $user_id AND group_id = $group_id";
-            $result = mysqli_query($db, $sql);
+            $result = $dbal->query($sql);
         }
 
         echo "<div class='msgbox'>Users removed. <br /><i>return to <a href='./?group=$group_name'>group page \"$group_name\"</a>.</i></div>";
@@ -142,8 +144,7 @@ if ($read_only) {
             $id = $selected[0];
         }
 
-        $result = mysqli_query($db, "$select_groups AND groups.group_id=$id");
-        $myrow = mysqli_fetch_array($result);
+        $myrow = $dbal->query("$select_groups AND groups.group_id=$id")[0] ?? [];
 
         ?>
         <form accept-charset="utf-8" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
@@ -161,12 +162,12 @@ if ($read_only) {
 					       WHERE group_id != $id
 					      ORDER BY lower(group_name) ASC;";
 
-                $result_groups = mysqli_query($db, $sql);
-                $result_gropup_snumber = mysqli_num_rows($result_groups);
+                $result_groups = $dbal->query($sql)[0];
+                $result_gropup_snumber = count($result_groups);
 
                 //	has parent row in list been found?
                 $parent_found = false;
-                while ($myrow2 = mysqli_fetch_array($result_groups)) {
+                foreach ($result_groups as $myrow2) {
                     //	look for selected parent
                     if ($myrow['group_parent_id'] == $myrow2['group_id']) {
                         $selected_text = ' selected';

@@ -4,9 +4,14 @@
 
 global $projectRoot, $includes;
 
+use AddressBook\DBAL\Database;
+
 include_once $includes . DS . 'configure.php';
 include_once $includes . DS . 'format.inc.php';
 include_once $includes . DS . 'photo.class.php';
+
+
+$dbal = Database::getInstance();
 
 ?>
 
@@ -41,9 +46,10 @@ include_once $includes . DS . 'photo.class.php';
 <hr/>
 <?php
 
+
 $addresses = Addresses::withSearchString($searchstring, $alphabet);
 $result = $addresses->getResults();
-$resultsnumber = mysqli_num_rows($result);
+$resultsnumber = count($result);
 
 // TBD:  Pagination
 // http://php.about.com/od/phpwithmysql/ss/php_pagination.htm
@@ -63,10 +69,11 @@ if (isset($table_groups) and $table_groups != "" and !$is_fix_group) { ?>
             <option value="[none]">[<?php echo msg("NONE"); ?>]</option>
             <?php
             $sql = "SELECT group_name FROM $groups_from_where ORDER BY lower(group_name) ASC";
-            $result_groups = mysqli_query($sql);
-            $result_gropup_snumber = mysqli_num_rows($result_groups);
+            $result_groups = $dbal->query($sql);
+            
+            $result_gropup_snumber = count($result_groups);
 
-            while ($myrow = mysqli_fetch_array($result_groups)) {
+            foreach ($result_groups as $myrow) {
                 echo "<option>" . $myrow["group_name"] . "</option>\n";
             }
             ?>
@@ -271,10 +278,10 @@ if (isset($table_groups) and $table_groups != "" and !$is_fix_group) { ?>
                 echo "<select name='to_group'>";
 
                 $sql = "SELECT group_name FROM $groups_from_where ORDER BY lower(group_name) ASC";
-                $result = mysqli_query($db, $sql);
-                $resultsnumber = mysqli_num_rows($result);
+                $result = $dbal->query($sql);
+                $resultsnumber = count($result);
 
-                while ($myrow = mysqli_fetch_array($result)) {
+                foreach ($result as $myrow) {
                     echo "<option>" . $myrow["group_name"] . "</option>\n";
                 }
                 echo "</select>";

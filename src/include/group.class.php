@@ -6,7 +6,7 @@ function saveGroup($group_name, $group_header = "", $group_footer = "") {
 
   $sql = "INSERT INTO $table_groups (domain_id,    group_name,   group_header,    group_footer) 
                              VALUES ('$domain_id', '$group_name','$group_header', '$group_footer')";
-  $result = mysqli_query($db, $sql);
+  $result = $dbal->query($sql);
 
 }
 

@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
 UserCake Version: 2.0.1
 http://usercake.com
@@ -11,7 +11,7 @@ if(!empty($_POST))
 {
 	$cfgId = array();
 	$newSettings = $_POST['settings'];
-	
+
 	//Validate new site name
 	if ($newSettings[1] != $websiteName) {
 		$newWebsiteName = $newSettings[1];
@@ -25,7 +25,7 @@ if(!empty($_POST))
 			$websiteName = $newWebsiteName;
 		}
 	}
-	
+
 	//Validate new URL
 	if ($newSettings[2] != $websiteUrl) {
 		$newWebsiteUrl = $newSettings[2];
@@ -42,7 +42,7 @@ if(!empty($_POST))
 			$websiteUrl = $newWebsiteUrl;
 		}
 	}
-	
+
 	//Validate new site email address
 	if ($newSettings[3] != $emailAddress) {
 		$newEmail = $newSettings[3];
@@ -60,7 +60,7 @@ if(!empty($_POST))
 			$emailAddress = $newEmail;
 		}
 	}
-	
+
 	//Validate email activation selection
 	if ($newSettings[4] != $emailActivation) {
 		$newActivation = $newSettings[4];
@@ -74,7 +74,7 @@ if(!empty($_POST))
 			$emailActivation = $newActivation;
 		}
 	}
-	
+
 	//Validate new email activation resend threshold
 	if ($newSettings[5] != $resend_activation_threshold) {
 		$newResend_activation_threshold = $newSettings[5];
@@ -88,7 +88,7 @@ if(!empty($_POST))
 			$resend_activation_threshold = $newResend_activation_threshold;
 		}
 	}
-	
+
 	//Validate new language selection
 	if ($newSettings[6] != $language) {
 		$newLanguage = $newSettings[6];
@@ -97,7 +97,7 @@ if(!empty($_POST))
 			$errors[] = lang("CONFIG_LANGUAGE_CHAR_LIMIT",array(1,150));
 		}
 		elseif (!file_exists($newLanguage)) {
-			$errors[] = lang("CONFIG_LANGUAGE_INVALID",array($newLanguage));				
+			$errors[] = lang("CONFIG_LANGUAGE_INVALID",array($newLanguage));
 		}
 		else if (count($errors) == 0) {
 			$cfgId[] = 6;
@@ -105,7 +105,7 @@ if(!empty($_POST))
 			$language = $newLanguage;
 		}
 	}
-	
+
 	//Validate new template selection
 	if ($newSettings[7] != $template) {
 		$newTemplate = $newSettings[7];
@@ -114,7 +114,7 @@ if(!empty($_POST))
 			$errors[] = lang("CONFIG_TEMPLATE_CHAR_LIMIT",array(1,150));
 		}
 		elseif (!file_exists($newTemplate)) {
-			$errors[] = lang("CONFIG_TEMPLATE_INVALID",array($newTemplate));				
+			$errors[] = lang("CONFIG_TEMPLATE_INVALID",array($newTemplate));
 		}
 		else if (count($errors) == 0) {
 			$cfgId[] = 7;
@@ -122,14 +122,14 @@ if(!empty($_POST))
 			$template = $newTemplate;
 		}
 	}
-	
-	//Update configuration table with new settings
+
+	//Update config table with new settings
 	if (count($errors) == 0 AND count($cfgId) > 0) {
 		if (updateConfig($cfgId, $cfgValue)) {
 			$successes[] = lang("CONFIG_UPDATE_SUCCESSFUL");
 		}
 		else {
-			$errors[] = lang("SQL_ERROR");	
+			$errors[] = lang("SQL_ERROR");
 		}
 	}
 }

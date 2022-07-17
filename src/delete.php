@@ -14,8 +14,8 @@
   if(! $read_only)
   {
 	$sql="SELECT * FROM $base_from_where AND ".$part_sql;
-	$result = mysqli_query($db, $sql);
-	$resultsnumber = mysqli_num_rows($result);
+	$result = $dbal->query($sql);
+	$resultsnumber = count($result);
 
   	if(! deleteAddresses($part_sql)) {
   		echo "<br /><div class='msgbox'>Invalid record, sorry but the record no longer exsists<br /><i>return to <a href='index.php'>home page</a></i></div>";

@@ -76,7 +76,7 @@ if ($email_4_pw_email !== '') {
     $result = mysqli_query($db, $query) or die("Couldn't execute query");
 
 // now you can display the results returned
-    while ($row = mysqli_fetch_array($result)) {
+    while ($row = $result[0]??[];) {
 
         $email = $row["email"];
         $password = $row["password"];

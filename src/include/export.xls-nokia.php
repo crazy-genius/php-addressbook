@@ -34,8 +34,8 @@
 
 	$sql = "SELECT $table.*, $month_lookup.bmonth_num FROM $month_from_where ORDER BY lastname, firstname ASC";
 
-	$result = mysqli_query($db, $sql);
-	$resultsnumber = mysqli_num_rows($result);
+	$result = $dbal->query($sql);
+	$resultsnumber = count($result);
 
   // Header("Content-Type: application/vnd.ms-excel; charset=UTF-8");
   Header("Content-Type: application/vnd.ms-excel");
@@ -112,7 +112,7 @@ $headers = array( 0 => "Name"
   else
 	  echo "\r\n";
 
-	while ($myrow = mysqli_fetch_array($result))
+	foreach ($result as $myrow)
 	{
 		$rec = array();
 

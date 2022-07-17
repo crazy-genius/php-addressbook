@@ -2,13 +2,22 @@
 
 namespace AddressBook;
 
+use AddressBook\DBAL\Database;
+use Hybridauth\Hybridauth;
+
 class AuthHybrid extends AuthLoginDb {
 
     // return md5($username.$md5_pass.$this->ip_date);
 
+    /**
+     * @throws \Hybridauth\Exception\UnexpectedValueException
+     * @throws \Hybridauth\Exception\InvalidArgumentException
+     * @throws \Doctrine\DBAL\Exception
+     */
     function __construct($db_conn, $table) {
 
         parent::__construct($db_conn, $table);
+        $dbal = Database::getInstance();
 
         //
         // Check if user is valid in DB.
@@ -16,18 +25,18 @@ class AuthHybrid extends AuthLoginDb {
         $hybrid_types = array("facebook", "google", "yahoo", "live");
         $provider = $this->getUserName();
 
-        // create an instance for Hybridauth with the configuration file path as parameter
+        // create an instance for Hybridauth with the config file path as parameter
         $hybridauth_config = "hybridauth".DIRECTORY_SEPARATOR."config.php";
         require_once( "hybridauth".DIRECTORY_SEPARATOR."Hybrid".DIRECTORY_SEPARATOR."Auth.php" );
 
-        $hybridauth = new Hybrid_Auth( $hybridauth_config );
-        $loaded_providers = Hybrid_Auth::getConnectedProviders();
+        $hybridauth = new HybridAuth( $hybridauth_config );
+        $loaded_providers = $hybridauth->getConnectedProviders();
 
-        if($provider == "" && count($loaded_providers) > 0) {
+        if($provider === "" && count($loaded_providers) > 0) {
             $provider = strtolower($loaded_providers[0]);
         }
 
-        if($provider != "" && in_array($provider, $hybrid_types)) {
+        if($provider !== "" && in_array($provider, $hybrid_types)) {
 
             try{
 
@@ -55,9 +64,9 @@ class AuthHybrid extends AuthLoginDb {
                 $sql = "select user_id, domain_id, username, md5_pass from ".$table
                     ." where sso_".strtolower($provider)."_uid = '".$provider_uid."';";
 
-                $result = mysqli_query($db, $sql);
-                $rec = mysqli_fetch_array($result);
-                $cnt = mysqli_num_rows($result);
+                $result = $dbal->query($sql);
+                $rec = $result[0]??[];;
+                $cnt = count($result);
 
                 if($cnt == 1) {
                     $this->user_id  = $rec['user_id'];
@@ -70,7 +79,7 @@ class AuthHybrid extends AuthLoginDb {
                 // Display the recived error
                 switch( $e->getCode() ){
                     case 0 : $error = "Unspecified error."; break;
-                    case 1 : $error = "Hybriauth configuration error."; break;
+                    case 1 : $error = "Hybriauth config error."; break;
                     case 2 : $error = "Provider not properly configured."; break;
                     case 3 : $error = "Unknown or disabled provider."; break;
                     case 4 : $error = "Missing provider application credentials."; break;
