@@ -8,7 +8,6 @@ use AddressBook\DBAL\Database;
 
 class Addresses implements \Iterator
 {
-    private int $count = 0;
     private int $position = 0;
     private array $result = [];
 
@@ -74,7 +73,7 @@ class Addresses implements \Iterator
         $this->position = 0;
     }
 
-    function likePhone($row, $searchword)
+    public function likePhone($row, $searchword)
     {
         global $phone_delims;
 
@@ -92,6 +91,11 @@ class Addresses implements \Iterator
         $instance = new self();
         $instance->loadBy('id', $id);
         return $instance;
+    }
+
+    public function count(): int
+    {
+        return count($this->result);
     }
 
     public function key(): int

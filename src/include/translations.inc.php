@@ -47,7 +47,7 @@ function utf8_to_latin1($text)
 
     if (function_exists('iconv')) {
         setlocale(LC_CTYPE, 'cs_CZ');
-        return iconv("UTF-8", "ISO-8859-1//TRANSLIT", $text);
+        return iconv("UTF-8", "ISO-8859-1//TRANSLIT", $text ?? '');
 
     }
 

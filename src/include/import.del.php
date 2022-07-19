@@ -40,4 +40,3 @@ class ImportDel {
   	return $this->ab;
   }
 }
-?>

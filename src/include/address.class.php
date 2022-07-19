@@ -12,8 +12,12 @@ function getIfSetFromArray(array $array, string|int $key): string
     return (string)($array[$key] ?? "");
 }
 
-function trimAll(array $array): array
+function trimAll(mixed $array): mixed
 {
+    if (!is_array($array)) {
+        return $array;
+    }
+
     return \array_map(static function (mixed $value) {
         if (is_array($value)) {
             return trimAll($value);

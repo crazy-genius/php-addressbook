@@ -20,138 +20,141 @@
 *
 */
 
-function extractImg($photo_b64) {
+function extractImg($photo_b64)
+{
 
-   $base64 = explode(";", $photo_b64);
-   if(count($base64) >= 3) {
-     $base64 = $base64[2];
-     $base64 = explode(":", $base64);
-     if(count($base64) >= 2) {
-       return str_replace(" ", "", $base64[1]);
-     }
-   }
-   return "";
+    $base64 = explode(";", $photo_b64);
+    if (count($base64) >= 3) {
+        $base64 = $base64[2];
+        $base64 = explode(":", $base64);
+        if (count($base64) >= 2) {
+            return str_replace(" ", "", $base64[1]);
+        }
+    }
+    return "";
 
 }
 
 function embeddedImg($photo_b64): string
 {
 
-   $base64 = extractImg($photo_b64);
-   return ($base64 != "" ? '<img alt="Embedded Image" width=75 src="data:image/jpg;base64,'.$base64.'"/><br>' : "");
+    $base64 = extractImg($photo_b64);
+    return ($base64 != "" ? '<img alt="Embedded Image" width=75 src="data:image/jpg;base64,' . $base64 . '"/><br>' : "");
 
 }
 
-function binaryImg($photo_b64) {
+function binaryImg($photo_b64)
+{
 
-   return base64_decode(extractImg($photo_b64));
+    return base64_decode(extractImg($photo_b64));
 
 }
 
-class Photo {
+class Photo
+{
+    var $image;
+    var $image_type;
 
-   var $filename;
-   var $image;
-   var $image_type;
+    public function __construct(private readonly string $filename)
+    {
+        $this->load($filename);
+    }
 
-   function __construct($filename) {
-   	$this->filename = $filename;
-   	$this->load($filename);
-   }
+    private function load($filename): void
+    {
+        $image_info = getimagesize($filename);
+        $this->image_type = $image_info[2];
+        if ($this->image_type === IMAGETYPE_JPEG) {
+            $this->image = imagecreatefromjpeg($filename);
+        } elseif ($this->image_type === IMAGETYPE_GIF) {
 
-   function scaleToMaxSide($max_side) {
-   	 if($this->getWidth() > $this->getHeight()) {
-   	   $this->resizeToWidth($max_side);
-   	 } else {
-   	   $this->resizeToHeight($max_side);
-   	 }
-   }
+            $this->image = imagecreatefromgif($filename);
+        } elseif ($this->image_type === IMAGETYPE_PNG) {
 
-   function getBase64() {
-   	 $filename = $this->filename;
-   	 $this->save($filename); // Save as JPG
-     $data  = fread(fopen($filename, "r"), filesize($filename));
-     return 'PHOTO;ENCODING=BASE64;TYPE=JPEG:'
-            .base64_encode($data);
-   }
+            $this->image = imagecreatefrompng($filename);
+        }
+    }
 
-   function load($filename) {
+    function scaleToMaxSide($max_side): void
+    {
+        if ($this->getWidth() > $this->getHeight()) {
+            $this->resizeToWidth($max_side);
+        } else {
+            $this->resizeToHeight($max_side);
+        }
+    }
 
-      $image_info = getimagesize($filename);
-      $this->image_type = $image_info[2];
-      if( $this->image_type == IMAGETYPE_JPEG ) {
+    function getWidth(): bool|int
+    {
 
-         $this->image = imagecreatefromjpeg($filename);
-      } elseif( $this->image_type == IMAGETYPE_GIF ) {
+        return imagesx($this->image);
+    }
 
-         $this->image = imagecreatefromgif($filename);
-      } elseif( $this->image_type == IMAGETYPE_PNG ) {
+    function getHeight(): bool|int
+    {
 
-         $this->image = imagecreatefrompng($filename);
-      }
-   }
+        return imagesy($this->image);
+    }
 
-   function save($filename, $image_type=IMAGETYPE_JPEG, $compression=75, $permissions=null) {
+    function resizeToWidth($width): void
+    {
+        $ratio = $width / $this->getWidth();
+        $height = $this->getheight() * $ratio;
+        $this->resize($width, $height);
+    }
 
-      if( $image_type == IMAGETYPE_JPEG ) {
-         imagejpeg($this->image,$filename,$compression);
-      } elseif( $image_type == IMAGETYPE_GIF ) {
+    public function resize($width, $height): void
+    {
+        $new_image = imagecreatetruecolor((int)$width, (int)$height);
+        imagecopyresampled($new_image, $this->image, 0, 0, 0, 0, (int)$width, (int)$height, (int)$this->getWidth(), (int)$this->getHeight());
+        $this->image = $new_image;
+    }
 
-         imagegif($this->image,$filename);
-      } elseif( $image_type == IMAGETYPE_PNG ) {
+    public function resizeToHeight($height): void
+    {
+        $ratio = $height / $this->getHeight();
+        $width = $this->getWidth() * $ratio;
+        $this->resize($width, $height);
+    }
 
-         imagepng($this->image,$filename);
-      }
-      if( $permissions != null) {
+    public function getBase64(): string
+    {
+        $filename = $this->filename;
+        $this->save($filename); // Save as JPG
+        $data = fread(fopen($filename, 'rb'), filesize($filename));
+        return 'PHOTO;ENCODING=BASE64;TYPE=JPEG:'
+            . base64_encode($data);
+    }
 
-         chmod($filename,$permissions);
-      }
-   }
+    public function save(string $filename, $image_type = IMAGETYPE_JPEG, $compression = 75, $permissions = null): void
+    {
+        if ($image_type === IMAGETYPE_JPEG) {
+            imagejpeg($this->image, $filename, $compression);
+        } elseif ($image_type === IMAGETYPE_GIF) {
+            imagegif($this->image, $filename);
+        } elseif ($image_type === IMAGETYPE_PNG) {
+            imagepng($this->image, $filename);
+        }
+        if ($permissions !== null) {
+            chmod($filename, $permissions);
+        }
+    }
 
-   function output($image_type=IMAGETYPE_JPEG) {
+    public function output(int $image_type = IMAGETYPE_JPEG): void
+    {
+        if ($image_type === IMAGETYPE_JPEG) {
+            imagejpeg($this->image);
+        } elseif ($image_type === IMAGETYPE_GIF) {
+            imagegif($this->image);
+        } elseif ($image_type === IMAGETYPE_PNG) {
+            imagepng($this->image);
+        }
+    }
 
-      if( $image_type == IMAGETYPE_JPEG ) {
-         imagejpeg($this->image);
-      } elseif( $image_type == IMAGETYPE_GIF ) {
-
-         imagegif($this->image);
-      } elseif( $image_type == IMAGETYPE_PNG ) {
-
-         imagepng($this->image);
-      }
-   }
-
-   function getWidth() {
-
-      return imagesx($this->image);
-   }
-   function getHeight() {
-
-      return imagesy($this->image);
-   }
-   function resizeToHeight($height) {
-
-      $ratio = $height / $this->getHeight();
-      $width = $this->getWidth() * $ratio;
-      $this->resize($width,$height);
-   }
-
-   function resizeToWidth($width) {
-      $ratio = $width / $this->getWidth();
-      $height = $this->getheight() * $ratio;
-      $this->resize($width,$height);
-   }
-
-   function scale($scale) {
-      $width = $this->getWidth() * $scale/100;
-      $height = $this->getheight() * $scale/100;
-      $this->resize($width,$height);
-   }
-
-   function resize($width,$height) {
-      $new_image = imagecreatetruecolor($width, $height);
-      imagecopyresampled($new_image, $this->image, 0, 0, 0, 0, $width, $height, $this->getWidth(), $this->getHeight());
-      $this->image = $new_image;
-   }
-
+    public function scale($scale): void
+    {
+        $width = $this->getWidth() * $scale / 100;
+        $height = $this->getheight() * $scale / 100;
+        $this->resize($width, $height);
+    }
 }

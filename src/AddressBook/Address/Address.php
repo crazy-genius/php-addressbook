@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace AddressBook\Address;
 
+use Birthday;
+
 class Address
 {
-    private $address; // mother of all data
-
+    private $address = []; // mother of all data
     private $phones;
     private $emails;
 
-    function __construct($data)
+    public function __construct($data)
     {
         $this->address = $data;
         $this->phones = $this->getPhones();
@@ -22,10 +23,19 @@ class Address
     {
 
         $phones = [];
-        if ($this->address["home"] != "") $phones[] = $this->address["home"];
-        if ($this->address["mobile"] != "") $phones[] = $this->address["mobile"];
-        if ($this->address["work"] != "") $phones[] = $this->address["work"];
-        if ($this->address["phone2"] != "") $phones[] = $this->address["phone2"];
+        if ($this->address["home"] != "") {
+            $phones[] = $this->address["home"];
+        }
+        if ($this->address["mobile"] != "") {
+            $phones[] = $this->address["mobile"];
+        }
+        if ($this->address["work"] != "") {
+            $phones[] = $this->address["work"];
+        }
+        if ($this->address["phone2"] != "") {
+            $phones[] = $this->address["phone2"];
+        }
+
         return $phones;
     }
 

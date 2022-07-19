@@ -1,4 +1,7 @@
 <?php
+
+use AddressBook\Address\Address;
+
 include __DIR__ . DIRECTORY_SEPARATOR . "include/configure.php";
 include __DIR__ . DIRECTORY_SEPARATOR . "include/format.inc.php";
 
@@ -7,7 +10,11 @@ $dbal = AddressBook\DBAL\Database::getInstance();
 $resultsnumber = 0;
 if ($id) {
     $sql = "SELECT * FROM $base_from_where AND $table.id='$id'";
-    $r = $dbal->query($sql);
+    $r = $dbal->query($sql)[0] ?? [];
+    $r = \array_combine(
+        \array_map('strtolower', \array_keys($r)),
+        \array_values($r)
+    );
     $resultsnumber = count($r);
 }
 
@@ -76,7 +83,7 @@ if ($id) {
 
         $addr_per_line = ($only_phones ? 4 : 3);
 
-        foreach ($result[0]??[] as $r) {
+        foreach ($result as $r) {
             $r = trimAll($r);
             $address = new Address($r);
             if ($address->hasPhone() || !$only_phones) {

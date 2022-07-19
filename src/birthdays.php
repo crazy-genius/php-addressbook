@@ -1,5 +1,7 @@
 <?php
 
+use AddressBook\Address\Address;
+
 include("include/configure.php");
 
 
@@ -95,6 +97,10 @@ $result = $dbal->query($sql);
 $resultsnumber = count($result);
 
 foreach ($result as $myrow) {
+    $myrow = \array_combine(
+        \array_map('strtolower', \array_keys($myrow)),
+        \array_values($myrow),
+    );
     $firstname = $myrow["firstname"];
     $id = $myrow["id"];
     $lastname = $myrow["lastname"];
