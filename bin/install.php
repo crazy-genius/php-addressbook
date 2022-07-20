@@ -1,4 +1,10 @@
 <?php
+
+//check is it cli instance
+if (PHP_SAPI !== 'cli') {
+    die('This script must be run on the command line.');
+}
+
 // Check connection
 if (isset($_POST['db_host'])
     && isset($_POST['db_name'])
