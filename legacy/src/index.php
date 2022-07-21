@@ -2,12 +2,14 @@
 
 //use AddressBook\Addresses;
 
-global $projectRoot, $includes;
 
 use AddressBook\Address\Address;
 use AddressBook\Address\Addresses;
 use AddressBook\DBAL\Database;
 
+require_once __DIR__ . DIRECTORY_SEPARATOR . 'bootstrap.php';
+
+global $projectRoot, $includes;
 include_once $includes . DS . 'configure.php';
 include_once $includes . DS . 'format.inc.php';
 include_once $includes . DS . 'photo.class.php';

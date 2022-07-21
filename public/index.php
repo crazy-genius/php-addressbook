@@ -1,10 +1,9 @@
 <?php
 
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'bootstrap.php';
+use AddressBook\Kernel;
 
-$scriptToLoad = $_SERVER['REQUEST_URI'];
-if (strpos($scriptToLoad, '?') !== false) {
-    $scriptToLoad = substr($scriptToLoad, 0, strpos($scriptToLoad, '?'));
-}
+require dirname(__DIR__) . '/vendor/autoload_runtime.php';
 
-require_once dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $scriptToLoad;
+return static function (array $context) {
+    return new Kernel($context['APP_ENV'], (bool)$context['APP_DEBUG']);
+};

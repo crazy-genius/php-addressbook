@@ -1,0 +1,18 @@
+services:
+  nginx:
+    ports:
+      - "80:80"
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    links:
+      - database
+
+  ###> doctrine/doctrine-bundle ###
+  database:
+    volumes:
+      - ./.docker/db/data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+###< doctrine/doctrine-bundle ###
