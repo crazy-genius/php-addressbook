@@ -53,6 +53,7 @@
         <a href="#"><img src="{{- asset('bundles/legacy/title_x2.png') -}}" width=340 height=75 title="{{- block("title") -}}"  alt="{{- block("title") -}}" id="logo"/></a>
     </div>
     <div id="nav">
+        {% if app.user %}
         <ul>
             <li>
                 <a href="{{- path('app_addressbook_index') -}}">{{- 'home'|trans -}}</a>
@@ -82,6 +83,7 @@
                 <a href="{{- path('app_addressbook_index') -}}">{{- 'import'|trans -}}</a>
             </li>
         </ul>
+        {% endif %}
     </div>
     <div id="content">
     {% block body %}{% endblock %}

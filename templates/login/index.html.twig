@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Log in!{% endblock %}
+
+{% block body %}
+
+    <form accept-charset="utf-8" id="LoginForm" name="LoginForm" method="post">
+        {% if error is not null %}
+            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        {% if app.user %}
+            <div class="mb-3">
+                You are logged in as {{ app.user }}, <a href="{{ path('app_logout') }}">Logout</a>
+            </div>
+        {% else %}
+            <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+
+            <label for="username">{{ 'USER'|trans }}</label><input id="username" name="_username" tabindex="0" value="{{ last_username }}"/><br/>
+            <label for="password">{{ 'PASSWORD'|trans }}</label><input id="password" name="_password" type="password"/><br/>
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}" />
+            <input type=submit /><br><br>
+        {% endif %}
+    </form>
+
+{#    <a href="register">{{ 'CREATE_ACCOUNT'|trans }}</a>#}
+
+    <br><br>
+    <br>
+    <hr>
+
+    {% block javascripts %}
+        <script type="text/javascript">
+            document.LoginForm.user.focus();
+        </script>
+    {% endblock %}
+{% endblock %}

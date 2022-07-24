@@ -30,7 +30,8 @@
         "symfony/proxy-manager-bridge": "^6.1",
         "symfony/runtime": "^6.1",
         "symfony/yaml": "^6.1",
-        "symfony/webpack-encore-bundle": "^1.15"
+        "symfony/webpack-encore-bundle": "^1.15",
+        "symfony/password-hasher": "^6.1"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
