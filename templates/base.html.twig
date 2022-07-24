@@ -47,6 +47,9 @@
 <div id="container">
 
     <div id="top">
+        {% if app.user %}
+            <b>({{ app.user }})</b> <a href="{{ path('app_logout') }}">Logout</a>
+        {% endif %}
     </div>
     <div id="header">
         <h1><a href="#">{{- block("title") -}}</a></h1>
@@ -65,7 +68,7 @@
                 <a href="{{- path('app_group_index') -}}">{{- 'groups'|trans -}}</a>
             </li>
             <li class="export">
-                <a href="{{- path('app_addressbook_index') -}}">{{- 'next_birthdays'|trans -}}</a>
+                <a href="{{- path('app_next_birthday_index') -}}">{{- 'next_birthdays'|trans -}}</a>
             </li>
             <li class="export">
                 <a href="{{- path('app_addressbook_index') -}}">{{- 'print_all'|trans -}}</a>

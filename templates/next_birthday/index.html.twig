@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Next Birthday{% endblock %}
+
+{% block body %}
+    <h1>Next Birthday</h1>
+
+    <table id="birthdays" class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Days Elapsed</th>
+            <th>Near Year</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for birthday in birthdays %}
+            <tr>
+                <td>{{ birthday.firstname }}</td>
+                <td>{{ birthday.prio }}</td>
+                <td>{{ birthday.display_year }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
