@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}MonthLookup index{% endblock %}
+
+{% block body %}
+    <h1>MonthLookup index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>BmonthNum</th>
+                <th>Bmonth</th>
+                <th>BmonthShort</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for month_lookup in month_lookups %}
+            <tr>
+                <td>{{ month_lookup.bmonthNum }}</td>
+                <td>{{ month_lookup.bmonth }}</td>
+                <td>{{ month_lookup.bmonthShort }}</td>
+                <td>
+                    <a href="{{ path('app_month_lookup_show', {'bmonthNum': month_lookup.bmonthNum}) }}">show</a>
+                    <a href="{{ path('app_month_lookup_edit', {'bmonthNum': month_lookup.bmonthNum}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_month_lookup_new') }}">Create new</a>
+{% endblock %}

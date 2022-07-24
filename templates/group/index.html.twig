@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Group index{% endblock %}
+
+{% block body %}
+    <h1>Group index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>DomainId</th>
+                <th>GroupId</th>
+                <th>GroupParentId</th>
+                <th>Created</th>
+                <th>Modified</th>
+                <th>Deprecated</th>
+                <th>GroupName</th>
+                <th>GroupHeader</th>
+                <th>GroupFooter</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for group in groups %}
+            <tr>
+                <td>{{ group.domainId }}</td>
+                <td>{{ group.groupId }}</td>
+                <td>{{ group.groupParentId }}</td>
+                <td>{{ group.created ? group.created|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ group.modified ? group.modified|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ group.deprecated ? group.deprecated|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ group.groupName }}</td>
+                <td>{{ group.groupHeader }}</td>
+                <td>{{ group.groupFooter }}</td>
+                <td>
+                    <a href="{{ path('app_group_show', {'domainId': group.domainId}) }}">show</a>
+                    <a href="{{ path('app_group_edit', {'domainId': group.domainId}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="10">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_group_new') }}">Create new</a>
+{% endblock %}

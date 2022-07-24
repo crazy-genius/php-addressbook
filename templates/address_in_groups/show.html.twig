@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}AddressInGroups{% endblock %}
+
+{% block body %}
+    <h1>AddressInGroups</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ address_in_group.id }}</td>
+            </tr>
+            <tr>
+                <th>GroupId</th>
+                <td>{{ address_in_group.groupId }}</td>
+            </tr>
+            <tr>
+                <th>DomainId</th>
+                <td>{{ address_in_group.domainId }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ address_in_group.created ? address_in_group.created|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Modified</th>
+                <td>{{ address_in_group.modified ? address_in_group.modified|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Deprecated</th>
+                <td>{{ address_in_group.deprecated ? address_in_group.deprecated|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_address_in_groups_index') }}">back to list</a>
+
+    <a href="{{ path('app_address_in_groups_edit', {'id': address_in_group.id}) }}">edit</a>
+
+    {{ include('address_in_groups/_delete_form.html.twig') }}
+{% endblock %}

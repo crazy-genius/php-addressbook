@@ -1,0 +1,126 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User{% endblock %}
+
+{% block body %}
+    <h1>User</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>UserId</th>
+                <td>{{ user.userId }}</td>
+            </tr>
+            <tr>
+                <th>DomainId</th>
+                <td>{{ user.domainId }}</td>
+            </tr>
+            <tr>
+                <th>Username</th>
+                <td>{{ user.username }}</td>
+            </tr>
+            <tr>
+                <th>Md5Pass</th>
+                <td>{{ user.md5Pass }}</td>
+            </tr>
+            <tr>
+                <th>PasswordHint</th>
+                <td>{{ user.passwordHint }}</td>
+            </tr>
+            <tr>
+                <th>SsoFacebookUid</th>
+                <td>{{ user.ssoFacebookUid }}</td>
+            </tr>
+            <tr>
+                <th>SsoGoogleUid</th>
+                <td>{{ user.ssoGoogleUid }}</td>
+            </tr>
+            <tr>
+                <th>SsoLiveUid</th>
+                <td>{{ user.ssoLiveUid }}</td>
+            </tr>
+            <tr>
+                <th>SsoYahooUid</th>
+                <td>{{ user.ssoYahooUid }}</td>
+            </tr>
+            <tr>
+                <th>Lastname</th>
+                <td>{{ user.lastname }}</td>
+            </tr>
+            <tr>
+                <th>Firstname</th>
+                <td>{{ user.firstname }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ user.email }}</td>
+            </tr>
+            <tr>
+                <th>Phone</th>
+                <td>{{ user.phone }}</td>
+            </tr>
+            <tr>
+                <th>Address1</th>
+                <td>{{ user.address1 }}</td>
+            </tr>
+            <tr>
+                <th>Address2</th>
+                <td>{{ user.address2 }}</td>
+            </tr>
+            <tr>
+                <th>City</th>
+                <td>{{ user.city }}</td>
+            </tr>
+            <tr>
+                <th>State</th>
+                <td>{{ user.state }}</td>
+            </tr>
+            <tr>
+                <th>Zip</th>
+                <td>{{ user.zip }}</td>
+            </tr>
+            <tr>
+                <th>Country</th>
+                <td>{{ user.country }}</td>
+            </tr>
+            <tr>
+                <th>MasterCode</th>
+                <td>{{ user.masterCode }}</td>
+            </tr>
+            <tr>
+                <th>ConfirmationCode</th>
+                <td>{{ user.confirmationCode }}</td>
+            </tr>
+            <tr>
+                <th>PassResetCode</th>
+                <td>{{ user.passResetCode }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ user.status }}</td>
+            </tr>
+            <tr>
+                <th>Trials</th>
+                <td>{{ user.trials }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ user.created ? user.created|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Modified</th>
+                <td>{{ user.modified ? user.modified|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Deprecated</th>
+                <td>{{ user.deprecated ? user.deprecated|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_user_index') }}">back to list</a>
+
+    <a href="{{ path('app_user_edit', {'userId': user.userId}) }}">edit</a>
+
+    {{ include('user/_delete_form.html.twig') }}
+{% endblock %}

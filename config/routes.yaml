@@ -1,6 +1,7 @@
 controllers:
     resource: ../src/Controller/
     type: attribute
+
 legacy_controller:
     resource: ../src/Legacy/Controller/
     type: LegacyRoute

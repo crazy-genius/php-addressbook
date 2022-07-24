@@ -1,0 +1,235 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Addressbook{% endblock %}
+{% block sub_title %}Addressbook index{% endblock %}
+{% block body %}
+<div id="search-az">
+</div>
+<br/>
+<hr/>
+
+    <label style='width:24em;'><strong>{{ 'number_of_results'|trans }}</strong>: <span id='search_count'>{{ addressbooks|length }}</span></label>
+
+    <br/><br class="clear"/>
+
+    <form accept-charset="utf-8" name="MainForm" method="post" action="{{ path('app_group_index') }}" >
+        <input type="hidden" name="group" value="{{ group_id }}"/>
+        <table id="maintable" class="table sortcompletecallback-applyZebra">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Photo</th>
+                <th>Last first</th>
+                <th>Address</th>
+                <th>All Emails</th>
+                <th>All Phones</th>
+                <th>Edit</th>
+                <th>Details</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set alternate=2 %}
+            {% for addressbook in addressbooks %}
+                {% set alternate=alternate+1 %}
+                {% if alternate % 2 %}
+                {% set  color="odd" %}
+                {% else %}
+                {% set  color="" %}
+                {% endif %}
+                <tr class="{{- color -}}" name='entry'>
+                    <td class='center'>
+                        <input type='checkbox' id='{{ addressbook.id }}' name='selected[]' value='{{ addressbook.id }}' title='Select ({{ addressbook.firstname }} {{ addressbook.lastname }})' alt='Select ({{ addressbook.firstname }} {{ addressbook.lastname }})' accept='{{ addressbook.emails|join(',') }}' />
+                    </td>
+                    <td><img alt="Embedded Image" width=75 src="data:image/jpg;base64,{{ addressbook.decodedImage }}"><br></td>
+                    <td>({{ addressbook.middlename }}) {{ addressbook.lastname }} {{ addressbook.firstname }}</td>
+                    <td>{{ addressbook.addresses|join(',') }}</td>
+                    <td>{{ addressbook.emails|join(',') }}</td>
+                    <td>{{ addressbook.phones|join(',') }}</td>
+
+                    <td><a href="{{ path('app_addressbook_edit', {'id': addressbook.id}) }}">edit</a></td>
+                    <td><a href="{{ path('app_addressbook_show', {'id': addressbook.id}) }}">show</a></td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="42">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        &nbsp;<input type='checkbox' id='MassCB' onclick="MassSelection()" /> <em><strong>{{- 'SELECT_ALL'|trans -}}</strong></em><br><br>
+        <div class='left'><input type='button' value="{{- 'SEND_EMAIL'|trans -}}" onclick="MailSelection()" /></div>
+        <div class='left'><input type='button' value="{{- 'DELETE'|trans -}}"     onclick="DeleteSel()" /></div>
+        <br/>
+    </form>
+
+    {% block javascripts %}
+        <script type="text/javascript">
+            document.searchform.searchstring.focus();
+        </script>
+
+        <script type="text/javascript">
+
+            //
+            // Select All/None items
+            //
+            function MassSelection() {
+
+                const select_count = document.getElementsByName("selected[]").length;
+                const all_checked = document.getElementById("MassCB").checked;
+
+                for (i = 0; i < select_count; i++) {
+                    // select only visible items
+                    if (document.getElementsByName("selected[]")[i].parentNode.parentNode.style.display != "none") {
+                        document.getElementsByName("selected[]")[i].checked = all_checked;
+                    }
+                }
+            }
+
+            //
+            // Send Mail to selected persons
+            //
+            function MailSelection() {
+                var addresses = "";
+                var dst_count = 0;
+
+                select_count = document.getElementsByName("selected[]").length;
+                for (i = 0; i < select_count; i++) {
+                    selected_i = document.getElementsByName("selected[]")[i];
+                    if (selected_i.checked == true) {
+                        if (selected_i.accept != "" && selected_i.accept != null) {
+                            if (dst_count > 0) {
+                                addresses = addresses + "<?php echo getMailerDelim(); ?>";
+                            }
+                            addresses = addresses + selected_i.accept;
+                            dst_count++;
+                        }
+                    }
+                }
+
+                if (dst_count == 0)
+                    alert("No address selected.");
+                else
+                    location.href = "<?php echo getMailer(); ?>" + addresses;
+            }
+
+            function Doodle() {
+
+                var participants = "";
+                var dst_count = 0;
+
+                select_count = document.getElementsByName("selected[]").length;
+                for (i = 0; i < select_count; i++) {
+                    selected_i = document.getElementsByName("selected[]")[i];
+                    if (selected_i.checked == true) {
+                        participants += selected_i.id + ";";
+                        dst_count++;
+                    }
+                }
+                alert(participants);
+                if (dst_count == 0)
+                    alert("No paticipants selected.");
+                else
+                    location.href = "./doodle.php?part=" + participants;
+            }
+
+            function DeleteSel() {
+
+                var participants = "";
+                var dst_count = 0;
+
+                select_count = document.getElementsByName("selected[]").length;
+                for (i = 0; i < select_count; i++) {
+                    selected_i = document.getElementsByName("selected[]")[i];
+                    if (selected_i.checked == true) {
+                        participants += selected_i.id + ";";
+                        dst_count++;
+                    }
+                }
+
+                if (dst_count == 0)
+                    alert("No paticipants selected.");
+                else if (confirm('Delete ' + dst_count + ' addresses?')) {
+                    location.href = "./delete.php?part=" + participants;
+                }
+            }
+
+            function applyZebra() {
+
+                // loop over all lines
+                var maintable = document.getElementById("maintable")
+                var tbody = maintable.getElementsByTagName("tbody");
+                var entries = tbody[0].children;
+                var zebraCnt = 0;
+
+                // Skip header(0) + selection row(length-1)
+                for (i = 1; i < entries.length; i++) {
+                    if (entries[i].style.display != "none") {
+                        if ((zebraCnt % 2) == 0) {
+                            entries[i].className = "";
+                        } else {
+                            entries[i].className = "odd";
+                        }
+                        zebraCnt++;
+                    }
+                }
+            }
+
+            //
+            // Filter the items in the fields
+            //
+            function filterResults(field) {
+
+                var query = field.value;
+
+                // split lowercase on white spaces
+                var words = query.toLowerCase().split(" ");
+
+                // loop over all lines
+                var maintable = document.getElementById("maintable")
+                var tbody = maintable.getElementsByTagName("tbody");
+                var entries = tbody[0].children;
+                var foundCnt = 0;
+
+                // Skip header(0) + selection row(length-1)
+                for (i = 1; i < entries.length; i++) {
+
+                    // Use all columns that don't have the css class "center"
+                    var content = entries[i].childNodes[0].childNodes[0].accept;
+                    for (var j = 0; j < entries[i].childNodes.length; j++) {
+                        if (entries[i].childNodes[j].className == "center") continue;
+                        content += " " + entries[i].childNodes[j].innerHTML;
+                    }
+
+                    // Don't be case sensitive
+                    content = content.toLowerCase();
+
+                    // check if all words are present
+                    var foundAll = true;
+                    for (j = 0; j < words.length; j++) {
+                        foundAll = foundAll && (content.search(words[j]) != -1);
+                    }
+
+                    // Keep selected entries
+                    foundAll = foundAll || entries[i].childNodes[0].childNodes[0].checked;
+
+                    // ^Hide entry
+                    if (foundAll) {
+                        entries[i].style.display = "";
+                        foundCnt++;
+                    } else {
+                        entries[i].style.display = "none";
+                    }
+                }
+                document.getElementById("search_count").innerHTML = foundCnt;
+
+                applyZebra();
+            }
+            filterResults(document.getElementsByName("searchstring")[0]);
+
+            //-->
+        </script>
+
+        <script type="text/javascript" src="{{ asset('bundles/legacy/js/tablesort.min.js') }}"></script>
+    {% endblock %}
+{% endblock %}

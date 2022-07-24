@@ -1,0 +1,182 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Addressbook{% endblock %}
+
+{% block body %}
+    <h1>Addressbook</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ addressbook.id }}</td>
+            </tr>
+            <tr>
+                <th>DomainId</th>
+                <td>{{ addressbook.domainId }}</td>
+            </tr>
+            <tr>
+                <th>Firstname</th>
+                <td>{{ addressbook.firstname }}</td>
+            </tr>
+            <tr>
+                <th>Middlename</th>
+                <td>{{ addressbook.middlename }}</td>
+            </tr>
+            <tr>
+                <th>Lastname</th>
+                <td>{{ addressbook.lastname }}</td>
+            </tr>
+            <tr>
+                <th>Nickname</th>
+                <td>{{ addressbook.nickname }}</td>
+            </tr>
+            <tr>
+                <th>Company</th>
+                <td>{{ addressbook.company }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ addressbook.title }}</td>
+            </tr>
+            <tr>
+                <th>Address</th>
+                <td>{{ addressbook.address }}</td>
+            </tr>
+            <tr>
+                <th>AddrLong</th>
+                <td>{{ addressbook.addrLong }}</td>
+            </tr>
+            <tr>
+                <th>AddrLat</th>
+                <td>{{ addressbook.addrLat }}</td>
+            </tr>
+            <tr>
+                <th>AddrStatus</th>
+                <td>{{ addressbook.addrStatus }}</td>
+            </tr>
+            <tr>
+                <th>Home</th>
+                <td>{{ addressbook.home }}</td>
+            </tr>
+            <tr>
+                <th>Mobile</th>
+                <td>{{ addressbook.mobile }}</td>
+            </tr>
+            <tr>
+                <th>Work</th>
+                <td>{{ addressbook.work }}</td>
+            </tr>
+            <tr>
+                <th>Fax</th>
+                <td>{{ addressbook.fax }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ addressbook.email }}</td>
+            </tr>
+            <tr>
+                <th>Email2</th>
+                <td>{{ addressbook.email2 }}</td>
+            </tr>
+            <tr>
+                <th>Email3</th>
+                <td>{{ addressbook.email3 }}</td>
+            </tr>
+            <tr>
+                <th>Im</th>
+                <td>{{ addressbook.im }}</td>
+            </tr>
+            <tr>
+                <th>Im2</th>
+                <td>{{ addressbook.im2 }}</td>
+            </tr>
+            <tr>
+                <th>Im3</th>
+                <td>{{ addressbook.im3 }}</td>
+            </tr>
+            <tr>
+                <th>Homepage</th>
+                <td>{{ addressbook.homepage }}</td>
+            </tr>
+            <tr>
+                <th>Bday</th>
+                <td>{{ addressbook.bday ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>Bmonth</th>
+                <td>{{ addressbook.bmonth }}</td>
+            </tr>
+            <tr>
+                <th>Byear</th>
+                <td>{{ addressbook.byear }}</td>
+            </tr>
+            <tr>
+                <th>Aday</th>
+                <td>{{ addressbook.aday ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>Amonth</th>
+                <td>{{ addressbook.amonth }}</td>
+            </tr>
+            <tr>
+                <th>Ayear</th>
+                <td>{{ addressbook.ayear }}</td>
+            </tr>
+            <tr>
+                <th>Address2</th>
+                <td>{{ addressbook.address2 }}</td>
+            </tr>
+            <tr>
+                <th>Phone2</th>
+                <td>{{ addressbook.phone2 }}</td>
+            </tr>
+            <tr>
+                <th>Notes</th>
+                <td>{{ addressbook.notes }}</td>
+            </tr>
+            <tr>
+                <th>Photo</th>
+                <td>{{ addressbook.photo }}</td>
+            </tr>
+            <tr>
+                <th>XVcard</th>
+                <td>{{ addressbook.xVcard }}</td>
+            </tr>
+            <tr>
+                <th>XActivesync</th>
+                <td>{{ addressbook.xActivesync }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ addressbook.created ? addressbook.created|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Modified</th>
+                <td>{{ addressbook.modified ? addressbook.modified|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Deprecated</th>
+                <td>{{ addressbook.deprecated ? addressbook.deprecated|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Password</th>
+                <td>{{ addressbook.password }}</td>
+            </tr>
+            <tr>
+                <th>Login</th>
+                <td>{{ addressbook.login ? addressbook.login|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Role</th>
+                <td>{{ addressbook.role }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_addressbook_index') }}">back to list</a>
+
+    <a href="{{ path('app_addressbook_edit', {'id': addressbook.id}) }}">edit</a>
+
+    {{ include('addressbook/_delete_form.html.twig') }}
+{% endblock %}

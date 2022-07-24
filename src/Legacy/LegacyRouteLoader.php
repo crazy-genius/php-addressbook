@@ -40,8 +40,8 @@ final class LegacyRouteLoader extends Loader
         return $collection;
     }
 
-    public function supports(mixed $resource, string $type = null)
+    public function supports(mixed $resource, string $type = null): bool
     {
-        return true;
+        return $type === 'LegacyRoute';
     }
 }

@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit AddressInGroups{% endblock %}
+
+{% block body %}
+    <h1>Edit AddressInGroups</h1>
+
+    {{ include('address_in_groups/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_address_in_groups_index') }}">back to list</a>
+
+    {{ include('address_in_groups/_delete_form.html.twig') }}
+{% endblock %}

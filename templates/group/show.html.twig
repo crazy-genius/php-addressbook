@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Group{% endblock %}
+
+{% block body %}
+    <h1>Group</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>DomainId</th>
+                <td>{{ group.domainId }}</td>
+            </tr>
+            <tr>
+                <th>GroupId</th>
+                <td>{{ group.groupId }}</td>
+            </tr>
+            <tr>
+                <th>GroupParentId</th>
+                <td>{{ group.groupParentId }}</td>
+            </tr>
+            <tr>
+                <th>Created</th>
+                <td>{{ group.created ? group.created|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Modified</th>
+                <td>{{ group.modified ? group.modified|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Deprecated</th>
+                <td>{{ group.deprecated ? group.deprecated|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>GroupName</th>
+                <td>{{ group.groupName }}</td>
+            </tr>
+            <tr>
+                <th>GroupHeader</th>
+                <td>{{ group.groupHeader }}</td>
+            </tr>
+            <tr>
+                <th>GroupFooter</th>
+                <td>{{ group.groupFooter }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_group_index') }}">back to list</a>
+
+    <a href="{{ path('app_group_edit', {'domainId': group.domainId}) }}">edit</a>
+
+    {{ include('group/_delete_form.html.twig') }}
+{% endblock %}

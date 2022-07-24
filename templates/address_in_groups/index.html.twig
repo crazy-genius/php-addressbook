@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}AddressInGroups index{% endblock %}
+
+{% block body %}
+    <h1>AddressInGroups index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>GroupId</th>
+                <th>DomainId</th>
+                <th>Created</th>
+                <th>Modified</th>
+                <th>Deprecated</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for address_in_group in address_in_groups %}
+            <tr>
+                <td>{{ address_in_group.id }}</td>
+                <td>{{ address_in_group.groupId }}</td>
+                <td>{{ address_in_group.domainId }}</td>
+                <td>{{ address_in_group.created ? address_in_group.created|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ address_in_group.modified ? address_in_group.modified|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ address_in_group.deprecated ? address_in_group.deprecated|date('Y-m-d H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_address_in_groups_show', {'id': address_in_group.id}) }}">show</a>
+                    <a href="{{ path('app_address_in_groups_edit', {'id': address_in_group.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_address_in_groups_new') }}">Create new</a>
+{% endblock %}

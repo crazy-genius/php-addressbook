@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Addressbook{% endblock %}
+
+{% block body %}
+    <h1>Edit Addressbook</h1>
+
+    {{ include('addressbook/_form.html.twig', {'button_label': 'Update'}) }}
+
+    <a href="{{ path('app_addressbook_index') }}">back to list</a>
+
+    {{ include('addressbook/_delete_form.html.twig') }}
+{% endblock %}

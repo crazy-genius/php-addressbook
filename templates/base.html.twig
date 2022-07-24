@@ -1,19 +1,124 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
-        {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
-        {% endblock %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Welcome!{% endblock %}</title>
+    <link rel="icon"
+          href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+    <style type="text/css">
+        {% set mt_color = '#739fce' %}
+        {% set skin_color = 'blue' %}
 
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
-    </head>
-    <body>
-        {% block body %}{% endblock %}
-    </body>
+        body {
+            background-image: url({{ asset('bundles/legacy/skins/header-' ~ skin_color ~ '.jpg') }});
+            background-repeat: repeat-x;
+            background-position: top left;
+        }
+
+        table#maintable th {
+            text-align: center;
+            border: 1px solid #ccc;
+            font-size: 12px;
+            background: {{- mt_color -}};
+            color: #fff;
+        }
+
+        table#birthdays th {
+            color: #fff;
+            background: {{- mt_color -}};
+            margin: 25px;
+            border: 1px solid #ccc;
+        }
+    </style>
+
+    <link href="{{ asset('bundles/legacy/style.css') }}" type="text/css" rel="stylesheet" >
+
+    <link rel="icon" type="image/png" href="{{ asset('bundles/legacy/icons/font.png') }}"/>
+
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+    {% endblock %}
+
+    {% block javascripts %}
+        {{ encore_entry_script_tags('app') }}
+    {% endblock %}
+</head>
+<body>
+<div id="container">
+
+    <div id="top">
+    </div>
+    <div id="header">
+        <h1><a href="#">{{- block("title") -}}</a></h1>
+        <a href="#"><img src="{{- asset('bundles/legacy/title_x2.png') -}}" width=340 height=75 title="{{- block("title") -}}"  alt="{{- block("title") -}}" id="logo"/></a>
+    </div>
+    <div id="nav">
+        <ul>
+            <li>
+                <a href="{{- path('app_addressbook_index') -}}">{{- 'home'|trans -}}</a>
+            </li>
+            <li class="admin">
+                <a href="{{- path('app_addressbook_new') -}}">{{- 'add_new'|trans -}}</a>
+            </li>
+            <li class="all">
+                <a href="{{- path('app_group_index') -}}">{{- 'groups'|trans -}}</a>
+            </li>
+            <li class="export">
+                <a href="{{- path('app_addressbook_index') -}}">{{- 'next_birthdays'|trans -}}</a>
+            </li>
+            <li class="export">
+                <a href="{{- path('app_addressbook_index') -}}">{{- 'print_all'|trans -}}</a>
+            </li>
+            <li class="export">
+                <a href="{{- path('app_addressbook_index') -}}">{{- 'print_phones'|trans -}}</a>
+            </li>
+            <li class="export">
+                <a href="{{- path('app_addressbook_index') -}}">{{- 'map'|trans -}}</a>
+            </li>
+            <li class="export">
+                <a href="{{- path('app_addressbook_index') -}}">{{- 'export'|trans -}}</a>
+            </li>
+            <li class="export">
+                <a href="{{- path('app_addressbook_index') -}}">{{- 'import'|trans -}}</a>
+            </li>
+        </ul>
+    </div>
+    <div id="content">
+    {% block body %}{% endblock %}
+    </div>
+
+    <br>
+    <br>
+
+    <div id="footer">
+        <ul>
+            <li>
+                <a href="https://sourceforge.net/projects/php-addressbook/">php-addressbook</a>
+                <a href="notes.htm">v</a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<!--
+Copyright Notice:
+This script was written by Rob Minto, and is free to use and distribute under GPL.
+Any improvements, please email rob(at)widgetmonkey.com.
+Keep software free.
+And please leave this copyright notice. Thanks.
+
+Major update 2007-2009 by Olivier Chatelain, feel free to use and distribute under GPL.
+Any improvements, please email chatelao(at)users.sourceforge.net.
+
+Updated 2009 - Complete theme redesign by Leighton West. Any theme problems,
+please email retrorobot(at)users.sourceforge.net.
+
+Major contribution Mark James ("famfamfam"-icons, cc-by-2.5)
+For more details see: http://www.famfamfam.com/lab/icons/silk/
+
+Major contribution "frequency decoder" ("Unobtrusive Table Sort Script", cc-by-sa-2.5)
+For more details see: http://www.frequency-decoder.com/2006/09/16/unobtrusive-table-sort-script-revisited/
+-->
+
+</body>
 </html>
